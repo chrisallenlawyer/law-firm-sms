@@ -135,7 +135,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Court Reminder - 1 Day</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  &quot;URGENT: Your court appearance is tomorrow, {court_date} at {court_location}. Please arrive at {time}. Bring all required documents. Contact us immediately if you cannot attend.&quot;
+                  &quot;URGENT: Your court appearance is tomorrow, {'{court_date}'} at {'{court_location}'}. Please arrive at {'{time}'}. Bring all required documents. Contact us immediately if you cannot attend.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
@@ -153,7 +153,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Case Update</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  &quot;Hello {client_name}, we have an update regarding your case {case_number}. Please call our office at {phone_number} to discuss the next steps. Thank you for your patience.&quot;
+                  &quot;Hello {'{client_name}'}, we have an update regarding your case {'{case_number}'}. Please call our office at {'{phone_number}'} to discuss the next steps. Thank you for your patience.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
