@@ -195,7 +195,22 @@ export default async function MessagesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {messages.map((message: { id: string; sms_id: string; status: string; timestamp: string; error_message?: string; twilio_response?: Record<string, unknown>; client?: { name: string; phone: string } }) => (
+                    {messages.map((message: { 
+                      id: string; 
+                      client_id: string; 
+                      docket_id?: string; 
+                      template_id?: string; 
+                      scheduled_for: string; 
+                      sent_at?: string; 
+                      delivery_status: string; 
+                      twilio_message_sid?: string; 
+                      confirmation_received: boolean; 
+                      confirmation_received_at?: string; 
+                      created_at: string;
+                      client?: { name: string; phone: string }; 
+                      template?: { name: string }; 
+                      court_date?: { court_date: string; court_location: string } 
+                    }) => (
                       <tr key={message.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
