@@ -117,7 +117,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Court Reminder - 7 Days</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  &quot;Hello {client_name}, this is a reminder that you have a court appearance scheduled for {court_date} at {court_location}. Please arrive 15 minutes early. If you have any questions, contact our office at {phone_number}.&quot;
+                  &quot;Hello {'{client_name}'}, this is a reminder that you have a court appearance scheduled for {'{court_date}'} at {'{court_location}'}. Please arrive 15 minutes early. If you have any questions, contact our office at {'{phone_number}'}.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
