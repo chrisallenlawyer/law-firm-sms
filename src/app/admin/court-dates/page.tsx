@@ -96,7 +96,7 @@ export default async function CourtDatesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {courtDates.map((courtDate: { id: string; court_date: string; court_location: string; case_type: string; client?: { name: string; phone: string } }) => {
+                    {courtDates.map((courtDate: { id: string; court_date: string; court_location: string; case_type: string; status: string; client?: { name: string; phone: string } }) => {
                       const daysUntil = Math.ceil((new Date(courtDate.court_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
                       const isUpcoming = daysUntil > 0
                       const isUrgent = daysUntil <= 3 && daysUntil > 0
