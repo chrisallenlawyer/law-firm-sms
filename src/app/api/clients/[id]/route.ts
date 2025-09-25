@@ -4,10 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 // GET - Fetch a specific client
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     
     const { data: client, error } = await supabase
       .from('clients')
@@ -22,7 +23,7 @@ export async function GET(
           )
         )
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -40,10 +41,11 @@ export async function GET(
 // PUT - Update a client
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     const body = await request.json()
 
     const { 
@@ -81,7 +83,7 @@ export async function PUT(
         case_status: case_status || 'active',
         attorney_id: attorney_id || null
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -100,16 +102,17 @@ export async function PUT(
 // DELETE - Delete a client
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
 
     // First check if client has any docket assignments
     const { data: assignments, error: assignmentsError } = await supabase
       .from('client_docket_assignments')
       .select('id')
-      .eq('client_id', params.id)
+      .eq('client_id', id)
       .limit(1)
 
     if (assignmentsError) {
@@ -126,7 +129,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('clients')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       console.error('Error deleting client:', error)

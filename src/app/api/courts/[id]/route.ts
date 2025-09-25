@@ -4,15 +4,16 @@ import { createClient } from '@/lib/supabase/server'
 // GET - Fetch a specific court
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     
     const { data: court, error } = await supabase
       .from('courts')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -30,10 +31,11 @@ export async function GET(
 // PUT - Update a court
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     const body = await request.json()
 
     const { 
@@ -65,7 +67,7 @@ export async function PUT(
         website: website || null,
         is_active: is_active !== undefined ? is_active : true
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -84,16 +86,17 @@ export async function PUT(
 // DELETE - Delete a court
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
 
     // First check if court has any dockets
     const { data: dockets, error: docketsError } = await supabase
       .from('dockets')
       .select('id')
-      .eq('court_id', params.id)
+      .eq('court_id', id)
       .limit(1)
 
     if (docketsError) {
@@ -110,7 +113,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('courts')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       console.error('Error deleting court:', error)

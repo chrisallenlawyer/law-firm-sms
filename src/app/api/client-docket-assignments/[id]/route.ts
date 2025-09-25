@@ -4,15 +4,16 @@ import { createClient } from '@/lib/supabase/server'
 // DELETE - Remove client from docket
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
 
     const { error } = await supabase
       .from('client_docket_assignments')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       console.error('Error removing assignment:', error)

@@ -4,10 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 // GET - Fetch a specific docket
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     
     const { data: docket, error } = await supabase
       .from('dockets')
@@ -19,7 +20,7 @@ export async function GET(
           client:clients (first_name, last_name, phone)
         )
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (error) {
@@ -37,10 +38,11 @@ export async function GET(
 // PUT - Update a docket
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
     const body = await request.json()
 
     const { 
@@ -70,7 +72,7 @@ export async function PUT(
         description: description || null,
         is_active: is_active !== undefined ? is_active : true
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 
@@ -89,16 +91,17 @@ export async function PUT(
 // DELETE - Delete a docket
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
+    const { id } = await params
 
     // First check if docket has any client assignments
     const { data: assignments, error: assignmentsError } = await supabase
       .from('client_docket_assignments')
       .select('id')
-      .eq('docket_id', params.id)
+      .eq('docket_id', id)
       .limit(1)
 
     if (assignmentsError) {
@@ -115,7 +118,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('dockets')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
 
     if (error) {
       console.error('Error deleting docket:', error)
