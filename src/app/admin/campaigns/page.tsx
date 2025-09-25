@@ -238,7 +238,7 @@ export default async function CampaignsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {campaigns.map((campaign: { id: string; name: string; status: string; successful_sends: number; total_recipients: number; created_at: string; docket?: { court?: { name: string }; docket_date: string; docket_time?: string }; template?: { name: string; days_before: number }; created_by_user?: { name: string } }) => (
+                    {campaigns.map((campaign: { id: string; name: string; status: string; successful_sends: number; total_recipients: number; created_at: string; scheduled_for?: string; docket?: { court?: { name: string }; docket_date: string; docket_time?: string }; template?: { name: string; days_before: number }; created_by_user?: { name: string } }) => (
                       <tr key={campaign.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
