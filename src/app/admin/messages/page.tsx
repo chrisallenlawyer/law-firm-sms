@@ -195,7 +195,7 @@ export default async function MessagesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {messages.map((message: { id: string; sms_id: string; status: string; timestamp: string; error_message?: string; twilio_response?: Record<string, unknown> }) => (
+                    {messages.map((message: { id: string; sms_id: string; status: string; timestamp: string; error_message?: string; twilio_response?: Record<string, unknown>; client?: { name: string; phone: string } }) => (
                       <tr key={message.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
