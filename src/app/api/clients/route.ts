@@ -5,10 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
-    const { searchParams } = new URL(request.url)
-    const docketId = searchParams.get('docket_id')
-    
-    let query = supabase
+    const query = supabase
       .from('clients')
       .select(`
         *,

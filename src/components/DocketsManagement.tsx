@@ -183,7 +183,7 @@ export default function DocketsManagement() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          client_id: (e.target as any).client_id.value,
+          client_id: (e.target as HTMLFormElement).client_id.value,
           docket_id: selectedDocketId
         }),
       })

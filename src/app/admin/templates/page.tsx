@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 export default async function TemplatesPage() {
-  const user = await requireAuth()
+  await requireAuth()
   const supabase = await createClient()
 
   // Get all SMS templates
@@ -48,7 +48,7 @@ export default async function TemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
           {templates && templates.length > 0 ? (
-            templates.map((template: any) => (
+            templates.map((template: { id: string; name: string; message_template: string; days_before: number; is_active: boolean; created_at: string }) => (
               <div key={template.id} className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -117,7 +117,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Court Reminder - 7 Days</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  "Hello {client_name}, this is a reminder that you have a court appearance scheduled for {court_date} at {court_location}. Please arrive 15 minutes early. If you have any questions, contact our office at {phone_number}."
+                  &quot;Hello {client_name}, this is a reminder that you have a court appearance scheduled for {court_date} at {court_location}. Please arrive 15 minutes early. If you have any questions, contact our office at {phone_number}.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
@@ -135,7 +135,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Court Reminder - 1 Day</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  "URGENT: Your court appearance is tomorrow, {court_date} at {court_location}. Please arrive at {time}. Bring all required documents. Contact us immediately if you cannot attend."
+                  &quot;URGENT: Your court appearance is tomorrow, {court_date} at {court_location}. Please arrive at {time}. Bring all required documents. Contact us immediately if you cannot attend.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">
@@ -153,7 +153,7 @@ export default async function TemplatesPage() {
               <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-gray-300">
                 <h4 className="text-md font-medium text-gray-900 mb-2">Case Update</h4>
                 <p className="text-sm text-gray-600 mb-4">
-                  "Hello {client_name}, we have an update regarding your case {case_number}. Please call our office at {phone_number} to discuss the next steps. Thank you for your patience."
+                  &quot;Hello {client_name}, we have an update regarding your case {case_number}. Please call our office at {phone_number} to discuss the next steps. Thank you for your patience.&quot;
                 </p>
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <span className="flex items-center">

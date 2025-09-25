@@ -3,7 +3,7 @@ import Link from 'next/link'
 import DocketsManagement from '@/components/DocketsManagement'
 
 export default async function DocketsPage() {
-  const user = await requireAuth()
+  await requireAuth()
 
   return (
     <div className="min-h-screen bg-gray-50">

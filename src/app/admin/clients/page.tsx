@@ -3,7 +3,7 @@ import Link from 'next/link'
 import ClientsManagement from '@/components/ClientsManagement'
 
 export default async function ClientsPage() {
-  const user = await requireAuth()
+  await requireAuth()
 
   return (
     <div className="min-h-screen bg-gray-50">

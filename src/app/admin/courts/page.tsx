@@ -3,7 +3,7 @@ import Link from 'next/link'
 import CourtsManagement from '@/components/CourtsManagement'
 
 export default async function CourtsPage() {
-  const user = await requireAuth()
+  await requireAuth()
 
   return (
     <div className="min-h-screen bg-gray-50">

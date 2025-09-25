@@ -10,20 +10,12 @@ export default async function EnhancedDashboard() {
   const [
     { count: totalClients },
     { count: totalCourts },
-    { count: totalDockets },
     { count: upcomingDockets },
-    { count: pendingSMS },
-    { count: sentSMS },
-    { count: deliveredSMS },
     { count: activeCampaigns }
   ] = await Promise.all([
     supabase.from('clients').select('*', { count: 'exact', head: true }),
     supabase.from('courts').select('*', { count: 'exact', head: true }),
-    supabase.from('dockets').select('*', { count: 'exact', head: true }),
     supabase.from('dockets').select('*', { count: 'exact', head: true }).gte('docket_date', new Date().toISOString().split('T')[0]),
-    supabase.from('sms_messages').select('*', { count: 'exact', head: true }).eq('delivery_status', 'pending'),
-    supabase.from('sms_messages').select('*', { count: 'exact', head: true }).eq('delivery_status', 'sent'),
-    supabase.from('sms_messages').select('*', { count: 'exact', head: true }).eq('delivery_status', 'delivered'),
     supabase.from('sms_campaigns').select('*', { count: 'exact', head: true }).in('status', ['draft', 'scheduled', 'sending'])
   ])
 
@@ -286,7 +278,7 @@ export default async function EnhancedDashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {upcomingDocketsData.map((docket: any) => (
+                    {upcomingDocketsData.map((docket: { id: string; docket_date: string; docket_time?: string; judge_name?: string; docket_type?: string; court?: { name: string }; client_assignments?: { count: number }[] }) => (
                       <tr key={docket.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {docket.court?.name || 'Unknown Court'}
@@ -357,7 +349,7 @@ export default async function EnhancedDashboard() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {recentCampaigns.map((campaign: any) => (
+                    {recentCampaigns.map((campaign: { id: string; name: string; status: string; successful_sends: number; total_recipients: number; created_at: string; docket?: { court?: { name: string }; docket_date: string }; template?: { name: string } }) => (
                       <tr key={campaign.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {campaign.name}

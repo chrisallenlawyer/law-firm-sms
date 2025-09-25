@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 export default async function MessagesPage() {
-  const user = await requireAuth()
+  await requireAuth()
   const supabase = await createClient()
 
   // Get all SMS messages
@@ -195,7 +195,7 @@ export default async function MessagesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {messages.map((message: any) => (
+                    {messages.map((message: { id: string; sms_id: string; status: string; timestamp: string; error_message?: string; twilio_response?: Record<string, unknown> }) => (
                       <tr key={message.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 export default async function CourtDatesPage() {
-  const user = await requireAuth()
+  await requireAuth()
   const supabase = await createClient()
 
   // Get all court dates
@@ -96,7 +96,7 @@ export default async function CourtDatesPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {courtDates.map((courtDate: any) => {
+                    {courtDates.map((courtDate: { id: string; court_date: string; court_location: string; case_type: string; client?: { name: string; phone: string } }) => {
                       const daysUntil = Math.ceil((new Date(courtDate.court_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
                       const isUpcoming = daysUntil > 0
                       const isUrgent = daysUntil <= 3 && daysUntil > 0
