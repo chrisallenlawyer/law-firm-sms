@@ -56,7 +56,7 @@ export default async function TemplatesPage() {
                       {template.name}
                     </h3>
                     <p className="text-sm text-gray-600 mb-4">
-                      {template.message_text}
+                      {template.message_template}
                     </p>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span className="flex items-center">
