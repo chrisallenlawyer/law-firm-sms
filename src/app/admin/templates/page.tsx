@@ -48,7 +48,7 @@ export default async function TemplatesPage() {
         {/* Templates Grid */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
           {templates && templates.length > 0 ? (
-            templates.map((template: { id: string; name: string; message_template: string; days_before: number; is_active: boolean; created_at: string }) => (
+            templates.map((template: { id: string; name: string; message_template: string; days_before: number; is_active: boolean; created_at: string; creator?: { name: string } }) => (
               <div key={template.id} className="bg-white rounded-lg shadow-md p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
