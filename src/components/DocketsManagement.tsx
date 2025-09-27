@@ -553,8 +553,8 @@ export default function DocketsManagement() {
                             >
                               Assign Clients
                             </button>
-                            <button 
-                              onClick={() => window.open(`/admin/dockets/${docket.id}/report`, '_blank')}
+                            <button
+                              onClick={() => window.location.href = `/admin/dockets/${docket.id}/report`}
                               className="text-blue-600 hover:text-blue-900 text-left"
                             >
                               View Report

@@ -244,7 +244,6 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
           tox_received: clientData.tox_received,
           da_offer: clientData.da_offer,
           court_action: clientData.court_action,
-          attorney_id: clientData.attorney_id || null,
         })
         .eq('id', assignment.client.id)
 
@@ -438,7 +437,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                 <th>Jail/Bond</th>
                 <th>Disc</th>
                 <th>Tox</th>
-                <th>Assigned Attorney</th>
+                <th>Original Attorney</th>
                 <th>Primary Attorney</th>
                 <th>Secondary Attorney</th>
                 <th>Notes</th>
@@ -665,7 +664,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                     <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Jail/<br/>Bond</th>
                     <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Disc</th>
                     <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Tox</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Attorney</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Original Attorney</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">In Court Attorneys</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">Notes</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">DA Offer</th>
@@ -731,19 +730,8 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                           />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <select
-                            value={clientData?.attorney_id || ''}
-                            onChange={(e) => updateEditableData(assignment.id, 'attorney_id', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
-                          >
-                            <option value="">Select attorney</option>
-                            {attorneys.map(attorney => (
-                              <option key={attorney.id} value={attorney.id}>
-                                {attorney.name}
-                              </option>
-                            ))}
-                          </select>
+                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                          {client.attorney?.name || '-'}
                         </td>
                         <td className="px-2 py-2 w-32">
                           <div className="space-y-1">
