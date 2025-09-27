@@ -87,13 +87,16 @@ END;
 $$ language 'plpgsql';
 
 -- Add updated_at triggers
-CREATE TRIGGER IF NOT EXISTS update_site_images_updated_at 
+DROP TRIGGER IF EXISTS update_site_images_updated_at ON site_images;
+CREATE TRIGGER update_site_images_updated_at 
   BEFORE UPDATE ON site_images FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_site_content_updated_at 
+DROP TRIGGER IF EXISTS update_site_content_updated_at ON site_content;
+CREATE TRIGGER update_site_content_updated_at 
   BEFORE UPDATE ON site_content FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER IF NOT EXISTS update_site_settings_updated_at 
+DROP TRIGGER IF EXISTS update_site_settings_updated_at ON site_settings;
+CREATE TRIGGER update_site_settings_updated_at 
   BEFORE UPDATE ON site_settings FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert default site content

@@ -32,7 +32,8 @@ END;
 $$ language 'plpgsql';
 
 -- Add updated_at trigger
-CREATE TRIGGER IF NOT EXISTS update_faqs_updated_at 
+DROP TRIGGER IF EXISTS update_faqs_updated_at ON faqs;
+CREATE TRIGGER update_faqs_updated_at 
   BEFORE UPDATE ON faqs FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Insert sample FAQs
