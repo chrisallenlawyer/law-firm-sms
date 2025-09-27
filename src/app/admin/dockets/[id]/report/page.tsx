@@ -434,12 +434,11 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                 <th>Case #</th>
                 <th>Charge</th>
                 <th>Priors</th>
-                <th>Jail/Bond</th>
+                <th>Jail/<br/>Bond</th>
                 <th>Disc</th>
                 <th>Tox</th>
-                <th>Original Attorney</th>
-                <th>Primary Attorney</th>
-                <th>Secondary Attorney</th>
+                <th>Assigned<br/>Attorney</th>
+                <th>Primary/<br/>Secondary<br/>Attorney</th>
                 <th>Notes</th>
                 <th>DA Offer</th>
                 <th>Court Action</th>
@@ -455,6 +454,12 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                 const primaryAttorney = attorneys.find(a => a.id === clientData?.primary_attorney_id)
                 const secondaryAttorney = attorneys.find(a => a.id === clientData?.secondary_attorney_id)
                 
+                // Combine primary and secondary attorneys into one cell
+                const inCourtAttorneys = []
+                if (primaryAttorney?.name) inCourtAttorneys.push(`Primary: ${primaryAttorney.name}`)
+                if (secondaryAttorney?.name) inCourtAttorneys.push(`Secondary: ${secondaryAttorney.name}`)
+                const inCourtAttorneysText = inCourtAttorneys.length > 0 ? inCourtAttorneys.join('<br/>') : '-'
+                
                 return `
                   <tr>
                     <td>${client.last_name}, ${client.first_name}</td>
@@ -465,14 +470,13 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                     <td>${clientData?.discovery_received ? '✓' : '-'}</td>
                     <td>${clientData?.tox_received ? '✓' : '-'}</td>
                     <td>${assignedAttorney?.name || '-'}</td>
-                    <td>${primaryAttorney?.name || '-'}</td>
-                    <td>${secondaryAttorney?.name || '-'}</td>
+                    <td>${inCourtAttorneysText}</td>
                     <td>${clientData?.notes || '-'}</td>
                     <td>${clientData?.da_offer || '-'}</td>
                     <td>${clientData?.court_action || '-'}</td>
                   </tr>
                 `
-              }).join('') || '<tr><td colspan="13">No clients assigned to this docket.</td></tr>'}
+              }).join('') || '<tr><td colspan="11">No clients assigned to this docket.</td></tr>'}
             </tbody>
           </table>
         </body>
