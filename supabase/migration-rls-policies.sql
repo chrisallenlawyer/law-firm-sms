@@ -130,3 +130,4 @@ CREATE POLICY "Staff can update SMS campaigns" ON sms_campaigns
 
 CREATE POLICY "Staff can delete SMS campaigns" ON sms_campaigns
   FOR DELETE USING (true);
+

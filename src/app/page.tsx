@@ -32,6 +32,9 @@ export default function HomePage() {
               <Link href="#mission" className="text-gray-700 hover:text-blue-600 font-medium">
                 Mission
               </Link>
+              <Link href="/faqs" className="text-gray-700 hover:text-blue-600 font-medium">
+                FAQs
+              </Link>
               <Link href="#contact" className="text-gray-700 hover:text-blue-600 font-medium">
                 Contact
               </Link>
@@ -72,6 +75,29 @@ export default function HomePage() {
             <div className="relative">
               <RotatingCourthouseImages />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              Frequently Asked Questions
+            </h3>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+              Find answers to common questions about our services and legal process.
+            </p>
+            <Link 
+              href="/faqs" 
+              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              View All FAQs
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>
@@ -217,6 +243,7 @@ export default function HomePage() {
               <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li><Link href="#mission" className="text-gray-400 hover:text-white">Mission</Link></li>
+                <li><Link href="/faqs" className="text-gray-400 hover:text-white">FAQs</Link></li>
                 <li><Link href="#contact" className="text-gray-400 hover:text-white">Contact</Link></li>
                 <li><Link href="/admin/login" className="text-gray-400 hover:text-white">Staff Login</Link></li>
               </ul>

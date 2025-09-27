@@ -205,3 +205,4 @@ INSERT INTO sms_templates (name, message_text, days_before, is_active) VALUES
 -- Insert your first admin user (update with your actual email)
 INSERT INTO staff_users (email, name, role) 
 VALUES ('admin@yourlawfirm.com', 'Admin User', 'admin');
+

@@ -156,7 +156,7 @@ export default async function EnhancedDashboard() {
         <div className="bg-white shadow rounded-lg mb-8">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
               <Link
                 href="/admin/courts"
                 className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
@@ -241,6 +241,28 @@ export default async function EnhancedDashboard() {
                   </h3>
                   <p className="mt-2 text-sm text-gray-500">
                     Create and manage bulk SMS campaigns
+                  </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/faqs"
+                className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
+              >
+                <div>
+                  <span className="rounded-lg inline-flex p-3 bg-orange-50 text-orange-700 ring-4 ring-white">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </span>
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold text-black" style={{color: 'black', fontWeight: '900'}}>
+                    <span className="absolute inset-0" aria-hidden="true" />
+                    Manage FAQs
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Add and manage frequently asked questions
                   </p>
                 </div>
               </Link>
