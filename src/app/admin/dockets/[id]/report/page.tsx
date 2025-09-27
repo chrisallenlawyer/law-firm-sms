@@ -152,7 +152,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
         .from('docket_attorneys')
         .select(`
           *,
-          attorney:staff_users (id, name),
+          attorney:staff_users!docket_attorneys_attorney_id_fkey (id, name),
           client_docket_assignment:client_docket_assignments (id)
         `)
 
