@@ -433,7 +433,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                   ← Dockets Management
                 </Link>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Docket Client Report</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Docket Report</h1>
               <p className="text-gray-600">
                 {docket.court?.name} - {new Date(docket.docket_date).toLocaleDateString()}
               </p>
@@ -501,12 +501,12 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Case #</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charge</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priors</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jail/Bond</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discovery</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tox</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Jail/Bond</th>
+                    <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Disc</th>
+                    <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Tox</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Attorney</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">In Court Attorneys</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">In Court Attorneys</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">Notes</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DA Offer</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Court Action</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -531,7 +531,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             type="text"
                             value={clientData?.charge || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'charge', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                             placeholder="Enter charge"
                           />
                         </td>
@@ -540,20 +540,21 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             type="text"
                             value={clientData?.priors || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'priors', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                             placeholder="Enter priors"
                           />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
+                        <td className="px-2 py-2 w-20">
                           <input
                             type="text"
                             value={clientData?.jail_bond || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'jail_bond', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Jail/Bond status"
+                            className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+                            placeholder="J/B"
+                            maxLength={5}
                           />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-center">
+                        <td className="px-1 py-2 text-center w-16">
                           <input
                             type="checkbox"
                             checked={clientData?.discovery_received || false}
@@ -561,7 +562,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                           />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-center">
+                        <td className="px-1 py-2 text-center w-16">
                           <input
                             type="checkbox"
                             checked={clientData?.tox_received || false}
@@ -573,7 +574,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                           <select
                             value={clientData?.attorney_id || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'attorney_id', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                           >
                             <option value="">Select attorney</option>
                             {attorneys.map(attorney => (
@@ -583,12 +584,12 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             ))}
                           </select>
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
+                        <td className="px-2 py-2 w-32">
                           <div className="space-y-1">
                             <select
                               value={clientData?.primary_attorney_id || ''}
                               onChange={(e) => updateEditableData(assignment.id, 'primary_attorney_id', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                             >
                               <option value="">Primary</option>
                               {attorneys.map(attorney => (
@@ -600,7 +601,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             <select
                               value={clientData?.secondary_attorney_id || ''}
                               onChange={(e) => updateEditableData(assignment.id, 'secondary_attorney_id', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
                             >
                               <option value="">Secondary</option>
                               {attorneys.map(attorney => (
@@ -611,11 +612,11 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             </select>
                           </div>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 w-64">
                           <textarea
                             value={clientData?.notes || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'notes', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none text-gray-900"
                             rows={2}
                             placeholder="Notes"
                           />
@@ -624,7 +625,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                           <textarea
                             value={clientData?.da_offer || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'da_offer', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none text-gray-900"
                             rows={2}
                             placeholder="DA Offer"
                           />
@@ -633,7 +634,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                           <textarea
                             value={clientData?.court_action || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'court_action', e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none text-gray-900"
                             rows={2}
                             placeholder="Court Action"
                           />
