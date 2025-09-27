@@ -4,9 +4,18 @@
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create custom types
-CREATE TYPE user_role AS ENUM ('admin', 'staff', 'client', 'anonymous');
-CREATE TYPE image_type AS ENUM ('courthouse', 'office', 'general');
+-- Create custom types (only if they don't exist)
+DO $$ BEGIN
+    CREATE TYPE user_role AS ENUM ('admin', 'staff', 'client', 'anonymous');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE image_type AS ENUM ('courthouse', 'office', 'general');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Enhanced staff_users table with more fields
 ALTER TABLE staff_users 
@@ -17,8 +26,7 @@ ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true,
 ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP WITH TIME ZONE,
 ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES staff_users(id);
 
--- Update the role enum to include all levels
-ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'anonymous';
+-- Note: user_role enum already includes all needed values
 
 -- Site images table for managing rotating images
 CREATE TABLE IF NOT EXISTS site_images (
