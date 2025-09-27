@@ -164,7 +164,7 @@ export default async function EnhancedDashboard() {
         <div className="bg-white shadow rounded-lg mb-8">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
               <Link
                 href="/admin/courts"
                 className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
@@ -249,6 +249,28 @@ export default async function EnhancedDashboard() {
                   </h3>
                   <p className="mt-2 text-sm text-gray-500">
                     Create and manage bulk SMS campaigns
+                  </p>
+                </div>
+              </Link>
+
+              <Link
+                href="/admin/attorneys"
+                className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
+              >
+                <div>
+                  <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </span>
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold text-black" style={{color: 'black', fontWeight: '900'}}>
+                    <span className="absolute inset-0" aria-hidden="true" />
+                    Manage Attorneys
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Add and manage attorneys for client assignments
                   </p>
                 </div>
               </Link>

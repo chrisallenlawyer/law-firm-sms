@@ -553,7 +553,13 @@ export default function DocketsManagement() {
                             >
                               Assign Clients
                             </button>
-                            <button className="text-blue-600 hover:text-blue-900 text-left">
+                            <button 
+                              onClick={() => window.open(`/admin/dockets/${docket.id}/report`, '_blank')}
+                              className="text-blue-600 hover:text-blue-900 text-left"
+                            >
+                              View Report
+                            </button>
+                            <button className="text-purple-600 hover:text-purple-900 text-left">
                               Send Reminders
                             </button>
                             <button 
