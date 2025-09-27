@@ -13,6 +13,12 @@ export default async function DocketsPage() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <Link
+                href="/"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                ← Home
+              </Link>
+              <Link
                 href="/admin/enhanced-dashboard"
                 className="text-gray-500 hover:text-gray-700"
               >

@@ -8,6 +8,17 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const activeOnly = searchParams.get('active_only') === 'true'
 
+    // First check if the table exists
+    const { error: tableError } = await supabase
+      .from('faqs')
+      .select('count')
+      .limit(1)
+
+    if (tableError) {
+      console.error('Table check error:', tableError)
+      return NextResponse.json({ error: 'FAQ table not found. Please run database migration.' }, { status: 500 })
+    }
+
     let query = supabase
       .from('faqs')
       .select('*')
@@ -25,13 +36,13 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching FAQs:', error)
-      return NextResponse.json({ error: 'Failed to fetch FAQs' }, { status: 500 })
+      return NextResponse.json({ error: `Failed to fetch FAQs: ${error.message}` }, { status: 500 })
     }
 
     return NextResponse.json({ data })
   } catch (error) {
     console.error('Error in FAQ GET:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}` }, { status: 500 })
   }
 }
 
@@ -60,12 +71,12 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('Error creating FAQ:', error)
-      return NextResponse.json({ error: 'Failed to create FAQ' }, { status: 500 })
+      return NextResponse.json({ error: `Failed to create FAQ: ${error.message}` }, { status: 500 })
     }
 
     return NextResponse.json({ data }, { status: 201 })
   } catch (error) {
     console.error('Error in FAQ POST:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}` }, { status: 500 })
   }
 }

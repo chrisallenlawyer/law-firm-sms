@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth'
 import FAQsManagement from '@/components/FAQsManagement'
+import Link from 'next/link'
 
 export default async function FAQsPage() {
   const user = await requireAuth()
@@ -11,6 +12,14 @@ export default async function FAQsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
+              <div className="flex items-center space-x-4 mb-2">
+                <Link 
+                  href="/admin/enhanced-dashboard" 
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  ← Back to Dashboard
+                </Link>
+              </div>
               <h1 className="text-3xl font-bold text-gray-900">FAQ Management</h1>
               <p className="text-gray-600">Manage frequently asked questions for the public website</p>
             </div>
