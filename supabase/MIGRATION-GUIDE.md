@@ -85,3 +85,4 @@ If you encounter any issues:
 1. Check the Supabase logs in the dashboard
 2. Verify your environment variables are set correctly
 3. Make sure your database connection is working
+

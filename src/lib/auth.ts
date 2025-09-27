@@ -28,3 +28,4 @@ export async function requireAuth() {
     role: staffUser.role
   }
 }
+

@@ -146,3 +146,4 @@ CREATE POLICY "Staff can delete SMS campaigns" ON sms_campaigns
 --     SELECT id FROM clients WHERE auth.uid()::text = id::text
 --   ));
 
+

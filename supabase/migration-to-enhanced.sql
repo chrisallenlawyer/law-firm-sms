@@ -206,3 +206,4 @@ INSERT INTO sms_templates (name, message_text, days_before, is_active) VALUES
 INSERT INTO staff_users (email, name, role) 
 VALUES ('admin@yourlawfirm.com', 'Admin User', 'admin');
 
+
