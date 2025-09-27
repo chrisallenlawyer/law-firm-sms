@@ -230,6 +230,8 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
       if (!assignment) return
 
       const clientData = editableData[assignmentId]
+      
+      console.log('Saving client data for assignment:', assignmentId, clientData)
 
       // Update client data in clients table
       const { error: clientError } = await supabase
@@ -265,11 +267,23 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
       }
 
       // Handle docket attorney assignments (primary/secondary)
+      console.log('Processing docket attorney assignments:', {
+        primary: clientData.primary_attorney_id,
+        secondary: clientData.secondary_attorney_id
+      })
+      
       // First, delete existing docket attorney assignments for this assignment
-      await supabase
+      const { error: deleteError } = await supabase
         .from('docket_attorneys')
         .delete()
         .eq('client_docket_assignment_id', assignmentId)
+
+      if (deleteError) {
+        console.error('Error deleting existing docket attorneys:', deleteError)
+        // Don't fail the whole operation for this
+      } else {
+        console.log('Successfully deleted existing docket attorneys for assignment:', assignmentId)
+      }
 
       // Then insert new ones if specified
       const docketAttorneyInserts = []
@@ -290,15 +304,19 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
         })
       }
 
+      console.log('Docket attorney inserts to be created:', docketAttorneyInserts)
+
       if (docketAttorneyInserts.length > 0) {
         const { error: docketAttorneyError } = await supabase
           .from('docket_attorneys')
           .insert(docketAttorneyInserts)
 
         if (docketAttorneyError) {
-          console.error('Error updating docket attorneys:', docketAttorneyError)
+          console.error('Error inserting docket attorneys:', docketAttorneyError)
           alert('Failed to update in-court attorneys')
           return
+        } else {
+          console.log('Successfully inserted docket attorneys')
         }
       }
 
@@ -344,15 +362,56 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
         <head>
           <title>Docket Report - ${docket.court?.name} - ${new Date(docket.docket_date).toLocaleDateString()}</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #333; margin-bottom: 10px; }
-            h2 { color: #666; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
-            th { background-color: #f5f5f5; font-weight: bold; }
-            .header-info { margin-bottom: 30px; }
-            .docket-info { margin-bottom: 20px; }
-            @page { size: landscape; margin: 0.5in; }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 15px;
+              font-size: 12px;
+            }
+            h1 { 
+              color: #333; 
+              margin-bottom: 5px; 
+              font-size: 18px;
+            }
+            h2 { 
+              color: #666; 
+              margin-bottom: 15px; 
+              font-size: 14px;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 15px;
+              font-size: 10px;
+            }
+            th, td { 
+              border: 1px solid #000; 
+              padding: 4px; 
+              text-align: left; 
+              font-size: 10px;
+              vertical-align: top;
+            }
+            th { 
+              background-color: #f5f5f5; 
+              font-weight: bold;
+              font-size: 10px;
+            }
+            .header-info { margin-bottom: 20px; }
+            .docket-info { 
+              margin-bottom: 15px; 
+              font-size: 11px;
+            }
+            @page { 
+              size: landscape; 
+              margin: 0.25in; 
+            }
+            @media print {
+              body { margin: 0; padding: 10px; }
+              table { font-size: 9px; }
+              th, td { padding: 3px; font-size: 9px; }
+              h1 { font-size: 16px; }
+              h2 { font-size: 12px; }
+            }
           </style>
         </head>
         <body>
