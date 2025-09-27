@@ -1,8 +1,12 @@
 -- Attorney and Docket Enhancements Database Schema
 -- This file contains all the updates needed for attorney management and docket reporting
 
--- Add 'attorney' role to the user_role enum
-ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'attorney';
+-- IMPORTANT: Run this script in TWO PARTS due to PostgreSQL enum limitations
+-- PART 1: First run this line separately, then run the rest of the script
+-- ALTER TYPE user_role ADD VALUE IF NOT EXISTS 'attorney';
+
+-- PART 2: Run the rest of this script after PART 1 is committed
+-- (The enum value has already been added, so we can proceed with the rest)
 
 -- Add new fields to clients table for docket reporting
 ALTER TABLE clients 
@@ -35,7 +39,8 @@ CREATE INDEX IF NOT EXISTS idx_docket_attorneys_docket ON docket_attorneys(docke
 CREATE INDEX IF NOT EXISTS idx_docket_attorneys_client_assignment ON docket_attorneys(client_docket_assignment_id);
 CREATE INDEX IF NOT EXISTS idx_docket_attorneys_attorney ON docket_attorneys(attorney_id);
 CREATE INDEX IF NOT EXISTS idx_docket_attorneys_role ON docket_attorneys(attorney_role);
-CREATE INDEX IF NOT EXISTS idx_staff_users_attorney_role ON staff_users(role) WHERE role = 'attorney';
+-- Note: This index will be created after the enum value is added
+-- CREATE INDEX IF NOT EXISTS idx_staff_users_attorney_role ON staff_users(role) WHERE role = 'attorney';
 
 -- Add updated_at trigger for docket_attorneys
 DROP TRIGGER IF EXISTS update_docket_attorneys_updated_at ON docket_attorneys;
