@@ -333,6 +333,108 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
     }
   }
 
+  const handlePrint = () => {
+    // Hide the editable elements and show a print-friendly version
+    const printWindow = window.open('', '_blank')
+    if (!printWindow || !docket) return
+
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Docket Report - ${docket.court?.name} - ${new Date(docket.docket_date).toLocaleDateString()}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #333; margin-bottom: 10px; }
+            h2 { color: #666; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
+            th { background-color: #f5f5f5; font-weight: bold; }
+            .header-info { margin-bottom: 30px; }
+            .docket-info { margin-bottom: 20px; }
+            @page { size: landscape; margin: 0.5in; }
+          </style>
+        </head>
+        <body>
+          <div class="header-info">
+            <h1>Docket Report</h1>
+            <h2>${docket.court?.name} - ${new Date(docket.docket_date).toLocaleDateString()}</h2>
+          </div>
+          
+          <div class="docket-info">
+            <strong>Court:</strong> ${docket.court?.name || 'Not specified'}<br/>
+            <strong>Date:</strong> ${new Date(docket.docket_date).toLocaleDateString()}${docket.docket_time ? ` at ${docket.docket_time}` : ''}<br/>
+            <strong>Judge:</strong> ${docket.judge_name || 'Not specified'}<br/>
+            <strong>Type:</strong> ${docket.docket_type || 'Not specified'}<br/>
+            <strong>Clients:</strong> ${docket.client_assignments?.length || 0} assigned
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Case #</th>
+                <th>Charge</th>
+                <th>Priors</th>
+                <th>Jail/Bond</th>
+                <th>Disc</th>
+                <th>Tox</th>
+                <th>Assigned Attorney</th>
+                <th>Primary Attorney</th>
+                <th>Secondary Attorney</th>
+                <th>Notes</th>
+                <th>DA Offer</th>
+                <th>Court Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${docket.client_assignments?.map((assignment: ClientAssignment) => {
+                const client = assignment.client
+                const clientData = editableData[assignment.id]
+                
+                // Find attorneys
+                const assignedAttorney = attorneys.find(a => a.id === clientData?.attorney_id)
+                const primaryAttorney = attorneys.find(a => a.id === clientData?.primary_attorney_id)
+                const secondaryAttorney = attorneys.find(a => a.id === clientData?.secondary_attorney_id)
+                
+                return `
+                  <tr>
+                    <td>${client.last_name}, ${client.first_name}</td>
+                    <td>${client.case_number || '-'}</td>
+                    <td>${clientData?.charge || '-'}</td>
+                    <td>${clientData?.priors || '-'}</td>
+                    <td>${clientData?.jail_bond || '-'}</td>
+                    <td>${clientData?.discovery_received ? '✓' : '-'}</td>
+                    <td>${clientData?.tox_received ? '✓' : '-'}</td>
+                    <td>${assignedAttorney?.name || '-'}</td>
+                    <td>${primaryAttorney?.name || '-'}</td>
+                    <td>${secondaryAttorney?.name || '-'}</td>
+                    <td>${clientData?.notes || '-'}</td>
+                    <td>${clientData?.da_offer || '-'}</td>
+                    <td>${clientData?.court_action || '-'}</td>
+                  </tr>
+                `
+              }).join('') || '<tr><td colspan="13">No clients assigned to this docket.</td></tr>'}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `
+
+    printWindow.document.write(printContent)
+    printWindow.document.close()
+    printWindow.focus()
+    printWindow.print()
+    printWindow.close()
+  }
+
+  const handleDownloadPDF = () => {
+    // For now, use the same print functionality but with PDF as target
+    // In a production environment, you'd want to use a library like jsPDF or puppeteer
+    alert('PDF download functionality requires additional setup. For now, please use Print Report and select "Save as PDF" in your browser\'s print dialog.')
+    handlePrint()
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -440,13 +542,13 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
             </div>
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => window.print()}
+                onClick={() => handlePrint()}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 Print Report
               </button>
               <button 
-                onClick={() => window.print()}
+                onClick={() => handleDownloadPDF()}
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 Download PDF
@@ -499,16 +601,16 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                   <tr>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Case #</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Charge</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priors</th>
-                    <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Jail/Bond</th>
-                    <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Disc</th>
-                    <th className="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">Tox</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Charge</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Priors</th>
+                    <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Jail/<br/>Bond</th>
+                    <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Disc</th>
+                    <th className="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Tox</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Attorney</th>
                     <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">In Court Attorneys</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">Notes</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DA Offer</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Court Action</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">DA Offer</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Court Action</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -526,7 +628,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                         <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
                           {client.case_number || '-'}
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
+                        <td className="px-3 py-2 w-48">
                           <input
                             type="text"
                             value={clientData?.charge || ''}
@@ -535,7 +637,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             placeholder="Enter charge"
                           />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
+                        <td className="px-3 py-2 w-48">
                           <input
                             type="text"
                             value={clientData?.priors || ''}
@@ -544,17 +646,17 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             placeholder="Enter priors"
                           />
                         </td>
-                        <td className="px-2 py-2 w-20">
+                        <td className="px-1 py-2 text-center w-12">
                           <input
                             type="text"
                             value={clientData?.jail_bond || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'jail_bond', e.target.value)}
-                            className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900"
+                            className="w-full px-1 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-900 text-center"
                             placeholder="J/B"
                             maxLength={5}
                           />
                         </td>
-                        <td className="px-1 py-2 text-center w-16">
+                        <td className="px-1 py-2 text-center w-12">
                           <input
                             type="checkbox"
                             checked={clientData?.discovery_received || false}
@@ -562,7 +664,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                           />
                         </td>
-                        <td className="px-1 py-2 text-center w-16">
+                        <td className="px-1 py-2 text-center w-12">
                           <input
                             type="checkbox"
                             checked={clientData?.tox_received || false}
@@ -621,7 +723,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             placeholder="Notes"
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 w-48">
                           <textarea
                             value={clientData?.da_offer || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'da_offer', e.target.value)}
@@ -630,7 +732,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                             placeholder="DA Offer"
                           />
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2 w-48">
                           <textarea
                             value={clientData?.court_action || ''}
                             onChange={(e) => updateEditableData(assignment.id, 'court_action', e.target.value)}
