@@ -25,10 +25,26 @@ interface ClientAssignment {
     tox_received: boolean
     da_offer: string
     court_action: string
+    attorney_id?: string
     attorney?: {
+      id: string
       name: string
     }
   }
+}
+
+interface EditableClientData {
+  charge: string
+  priors: string
+  jail_bond: string
+  discovery_received: boolean
+  tox_received: boolean
+  da_offer: string
+  court_action: string
+  attorney_id: string
+  notes: string
+  primary_attorney_id: string
+  secondary_attorney_id: string
 }
 
 interface Docket {
@@ -48,6 +64,7 @@ interface DocketAttorney {
   id: string
   attorney_role: string
   attorney?: {
+    id: string
     name: string
   }
   client_docket_assignment?: {
@@ -55,11 +72,19 @@ interface DocketAttorney {
   }
 }
 
+interface Attorney {
+  id: string
+  name: string
+}
+
 export default function DocketReportPage({ params }: DocketReportPageProps) {
   const [docket, setDocket] = useState<Docket | null>(null)
-  const [attorneysByAssignment, setAttorneysByAssignment] = useState<Record<string, Record<string, string>>>({})
+  const [attorneys, setAttorneys] = useState<Attorney[]>([])
+  const [editableData, setEditableData] = useState<Record<string, EditableClientData>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState<Record<string, boolean>>({})
+  const [savingAll, setSavingAll] = useState(false)
   const supabase = createClient()
 
   const fetchDocketData = useCallback(async () => {
@@ -108,12 +133,26 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
 
       setDocket(docketData)
 
+      // Get attorneys list for dropdowns
+      const { data: attorneysData, error: attorneysListError } = await supabase
+        .from('staff_users')
+        .select('id, name')
+        .eq('role', 'attorney')
+        .eq('is_active', true)
+        .order('name')
+
+      if (attorneysListError) {
+        console.error('Attorneys list error:', attorneysListError)
+      } else {
+        setAttorneys(attorneysData || [])
+      }
+
       // Get docket attorneys for each client assignment
       const { data: docketAttorneys, error: attorneysError } = await supabase
         .from('docket_attorneys')
         .select(`
           *,
-          attorney:staff_users (name),
+          attorney:staff_users (id, name),
           client_docket_assignment:client_docket_assignments (id)
         `)
 
@@ -122,21 +161,43 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
         // Don't fail the whole page for attorney data
       }
 
-      // Organize attorneys by client assignment
-      const attorneysByAssignment = docketAttorneys?.reduce((acc: Record<string, Record<string, string>>, da: DocketAttorney) => {
-        const assignmentId = da.client_docket_assignment?.id
-        if (assignmentId) {
-          if (!acc[assignmentId]) {
-            acc[assignmentId] = {}
-          }
-          if (da.attorney?.name) {
-            acc[assignmentId][da.attorney_role] = da.attorney.name
-          }
-        }
-        return acc
-      }, {}) || {}
+      // We'll process docket attorneys directly when initializing editable data
 
-      setAttorneysByAssignment(attorneysByAssignment)
+      // Initialize editable data for each client assignment
+      const initialEditableData: Record<string, EditableClientData> = {}
+      docketData.client_assignments?.forEach((assignment: ClientAssignment) => {
+        const client = assignment.client
+        
+        // Find primary and secondary attorney IDs from docket attorneys
+        let primaryAttorneyId = ''
+        let secondaryAttorneyId = ''
+        
+        docketAttorneys?.forEach((da: DocketAttorney) => {
+          if (da.client_docket_assignment?.id === assignment.id) {
+            if (da.attorney_role === 'primary') {
+              primaryAttorneyId = da.attorney?.id || ''
+            } else if (da.attorney_role === 'secondary') {
+              secondaryAttorneyId = da.attorney?.id || ''
+            }
+          }
+        })
+        
+        initialEditableData[assignment.id] = {
+          charge: client.charge || '',
+          priors: client.priors || '',
+          jail_bond: client.jail_bond || '',
+          discovery_received: client.discovery_received || false,
+          tox_received: client.tox_received || false,
+          da_offer: client.da_offer || '',
+          court_action: client.court_action || '',
+          attorney_id: client.attorney_id || '',
+          notes: assignment.notes || '',
+          primary_attorney_id: primaryAttorneyId,
+          secondary_attorney_id: secondaryAttorneyId,
+        }
+      })
+
+      setEditableData(initialEditableData)
     } catch (err) {
       console.error('Error fetching docket data:', err)
       setError('An unexpected error occurred while loading the docket report.')
@@ -148,6 +209,129 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
   useEffect(() => {
     fetchDocketData()
   }, [fetchDocketData])
+
+  const updateEditableData = (assignmentId: string, field: keyof EditableClientData, value: string | boolean) => {
+    setEditableData(prev => ({
+      ...prev,
+      [assignmentId]: {
+        ...prev[assignmentId],
+        [field]: value
+      }
+    }))
+  }
+
+  const saveClientData = async (assignmentId: string) => {
+    if (!docket || !editableData[assignmentId]) return
+
+    setSaving(prev => ({ ...prev, [assignmentId]: true }))
+
+    try {
+      const assignment = docket.client_assignments?.find(a => a.id === assignmentId)
+      if (!assignment) return
+
+      const clientData = editableData[assignmentId]
+
+      // Update client data in clients table
+      const { error: clientError } = await supabase
+        .from('clients')
+        .update({
+          charge: clientData.charge,
+          priors: clientData.priors,
+          jail_bond: clientData.jail_bond,
+          discovery_received: clientData.discovery_received,
+          tox_received: clientData.tox_received,
+          da_offer: clientData.da_offer,
+          court_action: clientData.court_action,
+          attorney_id: clientData.attorney_id || null,
+        })
+        .eq('id', assignment.client.id)
+
+      if (clientError) {
+        console.error('Error updating client:', clientError)
+        alert('Failed to update client data')
+        return
+      }
+
+      // Update assignment notes
+      const { error: assignmentError } = await supabase
+        .from('client_docket_assignments')
+        .update({ notes: clientData.notes })
+        .eq('id', assignmentId)
+
+      if (assignmentError) {
+        console.error('Error updating assignment notes:', assignmentError)
+        alert('Failed to update assignment notes')
+        return
+      }
+
+      // Handle docket attorney assignments (primary/secondary)
+      // First, delete existing docket attorney assignments for this assignment
+      await supabase
+        .from('docket_attorneys')
+        .delete()
+        .eq('client_docket_assignment_id', assignmentId)
+
+      // Then insert new ones if specified
+      const docketAttorneyInserts = []
+      if (clientData.primary_attorney_id) {
+        docketAttorneyInserts.push({
+          client_docket_assignment_id: assignmentId,
+          docket_id: docket.id,
+          attorney_id: clientData.primary_attorney_id,
+          attorney_role: 'primary'
+        })
+      }
+      if (clientData.secondary_attorney_id) {
+        docketAttorneyInserts.push({
+          client_docket_assignment_id: assignmentId,
+          docket_id: docket.id,
+          attorney_id: clientData.secondary_attorney_id,
+          attorney_role: 'secondary'
+        })
+      }
+
+      if (docketAttorneyInserts.length > 0) {
+        const { error: docketAttorneyError } = await supabase
+          .from('docket_attorneys')
+          .insert(docketAttorneyInserts)
+
+        if (docketAttorneyError) {
+          console.error('Error updating docket attorneys:', docketAttorneyError)
+          alert('Failed to update in-court attorneys')
+          return
+        }
+      }
+
+      // Refresh the data
+      await fetchDocketData()
+      
+    } catch (err) {
+      console.error('Error saving client data:', err)
+      alert('An unexpected error occurred while saving')
+    } finally {
+      setSaving(prev => ({ ...prev, [assignmentId]: false }))
+    }
+  }
+
+  const saveAllData = async () => {
+    if (!docket) return
+
+    setSavingAll(true)
+
+    try {
+      const savePromises = Object.keys(editableData).map(assignmentId => 
+        saveClientData(assignmentId)
+      )
+
+      await Promise.all(savePromises)
+      
+    } catch (err) {
+      console.error('Error saving all data:', err)
+      alert('An unexpected error occurred while saving all data')
+    } finally {
+      setSavingAll(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -325,54 +509,147 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DA Offer</th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Court Action</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {docket.client_assignments?.map((assignment: ClientAssignment) => {
                     const client = assignment.client
-                    const assignmentAttorneys = attorneysByAssignment[assignment.id] || {}
-                    const inCourtAttorneys = [
-                      assignmentAttorneys.primary,
-                      assignmentAttorneys.secondary
-                    ].filter(Boolean).join(', ') || 'None assigned'
+                    const clientData = editableData[assignment.id]
+                    const isSaving = saving[assignment.id]
 
                     return (
-                      <tr key={assignment.id}>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                      <tr key={assignment.id} className={isSaving ? 'bg-yellow-50' : ''}>
+                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900 font-medium">
                           {client.last_name}, {client.first_name}
                         </td>
                         <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
                           {client.case_number || '-'}
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.charge || '-'}
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <input
+                            type="text"
+                            value={clientData?.charge || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'charge', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Enter charge"
+                          />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.priors || '-'}
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <input
+                            type="text"
+                            value={clientData?.priors || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'priors', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Enter priors"
+                          />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.jail_bond || '-'}
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <input
+                            type="text"
+                            value={clientData?.jail_bond || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'jail_bond', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Jail/Bond status"
+                          />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.discovery_received ? '✓' : '-'}
+                        <td className="px-3 py-2 whitespace-nowrap text-center">
+                          <input
+                            type="checkbox"
+                            checked={clientData?.discovery_received || false}
+                            onChange={(e) => updateEditableData(assignment.id, 'discovery_received', e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.tox_received ? '✓' : '-'}
+                        <td className="px-3 py-2 whitespace-nowrap text-center">
+                          <input
+                            type="checkbox"
+                            checked={clientData?.tox_received || false}
+                            onChange={(e) => updateEditableData(assignment.id, 'tox_received', e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {client.attorney?.name || '-'}
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <select
+                            value={clientData?.attorney_id || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'attorney_id', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="">Select attorney</option>
+                            {attorneys.map(attorney => (
+                              <option key={attorney.id} value={attorney.id}>
+                                {attorney.name}
+                              </option>
+                            ))}
+                          </select>
                         </td>
-                        <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
-                          {inCourtAttorneys}
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <div className="space-y-1">
+                            <select
+                              value={clientData?.primary_attorney_id || ''}
+                              onChange={(e) => updateEditableData(assignment.id, 'primary_attorney_id', e.target.value)}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                              <option value="">Primary</option>
+                              {attorneys.map(attorney => (
+                                <option key={attorney.id} value={attorney.id}>
+                                  {attorney.name}
+                                </option>
+                              ))}
+                            </select>
+                            <select
+                              value={clientData?.secondary_attorney_id || ''}
+                              onChange={(e) => updateEditableData(assignment.id, 'secondary_attorney_id', e.target.value)}
+                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                              <option value="">Secondary</option>
+                              {attorneys.map(attorney => (
+                                <option key={attorney.id} value={attorney.id}>
+                                  {attorney.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </td>
-                        <td className="px-3 py-2 text-xs text-gray-500">
-                          {assignment.notes || '-'}
+                        <td className="px-3 py-2">
+                          <textarea
+                            value={clientData?.notes || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'notes', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            rows={2}
+                            placeholder="Notes"
+                          />
                         </td>
-                        <td className="px-3 py-2 text-xs text-gray-500">
-                          {client.da_offer || '-'}
+                        <td className="px-3 py-2">
+                          <textarea
+                            value={clientData?.da_offer || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'da_offer', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            rows={2}
+                            placeholder="DA Offer"
+                          />
                         </td>
-                        <td className="px-3 py-2 text-xs text-gray-500">
-                          {client.court_action || '-'}
+                        <td className="px-3 py-2">
+                          <textarea
+                            value={clientData?.court_action || ''}
+                            onChange={(e) => updateEditableData(assignment.id, 'court_action', e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+                            rows={2}
+                            placeholder="Court Action"
+                          />
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          <button
+                            onClick={() => saveClientData(assignment.id)}
+                            disabled={isSaving}
+                            className={`px-3 py-1 text-xs font-medium rounded ${
+                              isSaving 
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}
+                          >
+                            {isSaving ? 'Saving...' : 'Save'}
+                          </button>
                         </td>
                       </tr>
                     )
@@ -384,6 +661,22 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
             {(!docket.client_assignments || docket.client_assignments.length === 0) && (
               <div className="text-center py-8">
                 <p className="text-gray-500">No clients assigned to this docket.</p>
+              </div>
+            )}
+
+            {docket.client_assignments && docket.client_assignments.length > 0 && (
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={saveAllData}
+                  disabled={savingAll}
+                  className={`px-6 py-2 text-sm font-medium rounded-md ${
+                    savingAll 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                >
+                  {savingAll ? 'Saving All...' : 'Save All Changes'}
+                </button>
               </div>
             )}
           </div>
