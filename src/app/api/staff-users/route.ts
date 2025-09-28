@@ -64,7 +64,32 @@ export async function POST(request: NextRequest) {
 
     let staffData
     if (existingStaff) {
-      // Update existing staff user with new auth ID
+      // For existing staff users with foreign key constraints, we need a different approach
+      // We'll update the foreign key references first, then update the staff user record
+      
+      console.log('Handling existing staff user with potential foreign key constraints')
+      
+      // Update all foreign key references to point to the new auth user
+      const { error: clientsError } = await supabase
+        .from('clients')
+        .update({ attorney_id: authData.user.id })
+        .eq('attorney_id', existingStaff.id)
+        
+      if (clientsError) {
+        console.log('No clients to update or error updating clients:', clientsError)
+      }
+      
+      // Update docket_attorneys table as well
+      const { error: docketAttorneysError } = await supabase
+        .from('docket_attorneys')
+        .update({ attorney_id: authData.user.id })
+        .eq('attorney_id', existingStaff.id)
+        
+      if (docketAttorneysError) {
+        console.log('No docket attorneys to update or error updating docket attorneys:', docketAttorneysError)
+      }
+      
+      // Now update the staff user record with the new auth ID
       const { data: updatedStaff, error: updateError } = await supabase
         .from('staff_users')
         .update({
@@ -80,8 +105,11 @@ export async function POST(request: NextRequest) {
       if (updateError) {
         console.error('Error updating existing staff user:', updateError)
         await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
-        return NextResponse.json({ error: 'Failed to update existing staff user record' }, { status: 400 })
+        return NextResponse.json({ 
+          error: `Failed to update existing staff user record: ${updateError.message}` 
+        }, { status: 400 })
       }
+      
       staffData = updatedStaff
     } else {
       // Create new staff user record
