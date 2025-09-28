@@ -56,63 +56,88 @@ export async function POST(request: NextRequest) {
 
     // Update all foreign key references to point to the new auth user
     // 1. Update clients.attorney_id
-    const { error: clientsError } = await supabase
+    console.log(`Updating clients.attorney_id from ${existingStaff.id} to ${authData.user.id}`)
+    const { data: clientsData, error: clientsError } = await supabase
       .from('clients')
       .update({ attorney_id: authData.user.id })
       .eq('attorney_id', existingStaff.id)
+      .select()
       
     if (clientsError) {
-      console.log('Error updating clients:', clientsError)
+      console.error('Error updating clients:', clientsError)
+      return NextResponse.json({ 
+        error: `Failed to update client attorney references: ${clientsError.message}` 
+      }, { status: 400 })
     } else {
-      console.log('Updated client attorney references')
+      console.log(`Updated ${clientsData?.length || 0} client attorney references`)
     }
     
     // 2. Update docket_attorneys.attorney_id
-    const { error: docketAttorneysError } = await supabase
+    console.log(`Updating docket_attorneys.attorney_id from ${existingStaff.id} to ${authData.user.id}`)
+    const { data: docketAttorneysData, error: docketAttorneysError } = await supabase
       .from('docket_attorneys')
       .update({ attorney_id: authData.user.id })
       .eq('attorney_id', existingStaff.id)
+      .select()
       
     if (docketAttorneysError) {
-      console.log('Error updating docket attorneys:', docketAttorneysError)
+      console.error('Error updating docket attorneys:', docketAttorneysError)
+      return NextResponse.json({ 
+        error: `Failed to update docket attorney references: ${docketAttorneysError.message}` 
+      }, { status: 400 })
     } else {
-      console.log('Updated docket attorney references')
+      console.log(`Updated ${docketAttorneysData?.length || 0} docket attorney references`)
     }
 
     // 3. Update docket_attorneys.assigned_by
-    const { error: docketAttorneysAssignedByError } = await supabase
+    console.log(`Updating docket_attorneys.assigned_by from ${existingStaff.id} to ${authData.user.id}`)
+    const { data: docketAttorneysAssignedByData, error: docketAttorneysAssignedByError } = await supabase
       .from('docket_attorneys')
       .update({ assigned_by: authData.user.id })
       .eq('assigned_by', existingStaff.id)
+      .select()
       
     if (docketAttorneysAssignedByError) {
-      console.log('Error updating docket attorneys assigned_by:', docketAttorneysAssignedByError)
+      console.error('Error updating docket attorneys assigned_by:', docketAttorneysAssignedByError)
+      return NextResponse.json({ 
+        error: `Failed to update docket attorney assigned_by references: ${docketAttorneysAssignedByError.message}` 
+      }, { status: 400 })
     } else {
-      console.log('Updated docket attorney assigned_by references')
+      console.log(`Updated ${docketAttorneysAssignedByData?.length || 0} docket attorney assigned_by references`)
     }
 
     // 4. Update dockets.created_by
-    const { error: docketsCreatedByError } = await supabase
+    console.log(`Updating dockets.created_by from ${existingStaff.id} to ${authData.user.id}`)
+    const { data: docketsCreatedByData, error: docketsCreatedByError } = await supabase
       .from('dockets')
       .update({ created_by: authData.user.id })
       .eq('created_by', existingStaff.id)
+      .select()
       
     if (docketsCreatedByError) {
-      console.log('Error updating dockets created_by:', docketsCreatedByError)
+      console.error('Error updating dockets created_by:', docketsCreatedByError)
+      return NextResponse.json({ 
+        error: `Failed to update docket created_by references: ${docketsCreatedByError.message}` 
+      }, { status: 400 })
     } else {
-      console.log('Updated docket created_by references')
+      console.log(`Updated ${docketsCreatedByData?.length || 0} docket created_by references`)
     }
 
     // 5. Update sms_templates.created_by
-    const { error: smsTemplatesCreatedByError } = await supabase
+    console.log(`Updating sms_templates.created_by from ${existingStaff.id} to ${authData.user.id}`)
+    const { data: smsTemplatesCreatedByData, error: smsTemplatesCreatedByError } = await supabase
       .from('sms_templates')
       .update({ created_by: authData.user.id })
       .eq('created_by', existingStaff.id)
+      .select()
       
     if (smsTemplatesCreatedByError) {
-      console.log('Error updating sms_templates created_by:', smsTemplatesCreatedByError)
+      console.error('Error updating sms_templates created_by:', smsTemplatesCreatedByError)
+      return NextResponse.json({ 
+        error: `Failed to update sms template created_by references: ${smsTemplatesCreatedByError.message}` 
+      }, { status: 400 })
     } else {
-      console.log('Updated sms template created_by references')
+      console.log(`Updated ${smsTemplatesCreatedByData?.length || 0} sms template created_by references`)
     }
 
     // Delete the old staff user record first (this should work now that foreign keys are updated)
