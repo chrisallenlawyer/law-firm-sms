@@ -10,7 +10,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 export function getSupabaseAdmin() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceRoleKey) {
+    console.error('SUPABASE_SERVICE_ROLE_KEY environment variable is missing')
     throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is required')
+  }
+  
+  if (!supabaseUrl) {
+    console.error('NEXT_PUBLIC_SUPABASE_URL environment variable is missing')
+    throw new Error('NEXT_PUBLIC_SUPABASE_URL environment variable is required')
   }
   
   return createClient(

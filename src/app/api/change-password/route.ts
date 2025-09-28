@@ -23,8 +23,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'New password must be at least 6 characters long' }, { status: 400 })
     }
 
-    // Verify current password by attempting to sign in
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    // Verify current password using admin client (doesn't interfere with session)
+    const supabaseAdmin = getSupabaseAdmin()
+    
+    // First verify the current password by attempting to sign in with admin client
+    const { error: signInError } = await supabaseAdmin.auth.signInWithPassword({
       email: authUser.email!,
       password: currentPassword
     })
@@ -33,8 +36,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })
     }
 
-    // Update password using admin API (since we're already authenticated)
-    const supabaseAdmin = getSupabaseAdmin()
+    // Update password using admin API
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(authUser.id, {
       password: newPassword
     })
@@ -46,7 +48,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: 'Password updated successfully' })
   } catch (error) {
-    console.error('Unexpected error:', error)
+    console.error('Unexpected error in change-password:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
