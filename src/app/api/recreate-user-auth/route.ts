@@ -78,32 +78,47 @@ export async function POST(request: NextRequest) {
       console.log('Updated docket attorney references')
     }
 
-    // Now update the staff user record with the new auth ID
-    const { data: updatedStaff, error: updateError } = await supabase
+    // Delete the old staff user record first (this should work now that foreign keys are updated)
+    const { error: deleteError } = await supabase
       .from('staff_users')
-      .update({
-        id: authData.user.id,
-        name: existingStaff.name,
-        role: existingStaff.role,
-        is_active: true
-      })
+      .delete()
       .eq('id', existingStaff.id)
-      .select()
-      .single()
 
-    if (updateError) {
-      console.error('Error updating staff user record:', updateError)
+    if (deleteError) {
+      console.error('Error deleting old staff user record:', deleteError)
       // Clean up the new auth user
       await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       return NextResponse.json({ 
-        error: `Failed to update staff user record: ${updateError.message}` 
+        error: `Failed to delete old staff user record: ${deleteError.message}` 
+      }, { status: 400 })
+    }
+
+    // Now create a new staff user record with the new auth ID
+    const { data: newStaff, error: createError } = await supabase
+      .from('staff_users')
+      .insert({
+        id: authData.user.id,
+        name: existingStaff.name,
+        email: existingStaff.email,
+        role: existingStaff.role,
+        is_active: true
+      })
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('Error creating new staff user record:', createError)
+      // Clean up the new auth user
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
+      return NextResponse.json({ 
+        error: `Failed to create new staff user record: ${createError.message}` 
       }, { status: 400 })
     }
 
     console.log('Successfully recreated authentication account for user:', existingStaff.email)
     return NextResponse.json({ 
       message: 'Authentication account recreated successfully',
-      user: updatedStaff 
+      user: newStaff 
     })
 
   } catch (error) {
