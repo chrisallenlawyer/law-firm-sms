@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase'
 
 // POST - Change user's own password
 export async function POST(request: NextRequest) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update password using admin API (since we're already authenticated)
-    const { error: updateError } = await supabase.auth.admin.updateUserById(authUser.id, {
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(authUser.id, {
       password: newPassword
     })
 

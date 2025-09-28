@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase'
 
 // GET - Fetch all staff users
 export async function GET() {
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user in Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password: password || 'temp123!', // Default password if not provided
       email_confirm: true,
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
     if (staffError) {
       console.error('Error creating staff user:', staffError)
       // Clean up auth user if staff creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id)
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
       return NextResponse.json({ error: 'Failed to create staff user record' }, { status: 400 })
     }
 
@@ -156,7 +157,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete from auth
-    const { error: authError } = await supabase.auth.admin.deleteUser(userId)
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId)
     if (authError) {
       console.error('Error deleting auth user:', authError)
       return NextResponse.json({ error: 'Failed to delete user account' }, { status: 400 })
@@ -191,7 +192,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update user password using admin API
-    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
       password: newPassword
     })
 
