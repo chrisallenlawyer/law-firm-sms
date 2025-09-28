@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     console.log('New auth user created with ID:', authData.user.id)
 
     // Update all foreign key references to point to the new auth user
+    // 1. Update clients.attorney_id
     const { error: clientsError } = await supabase
       .from('clients')
       .update({ attorney_id: authData.user.id })
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
       console.log('Updated client attorney references')
     }
     
-    // Update docket_attorneys table as well
+    // 2. Update docket_attorneys.attorney_id
     const { error: docketAttorneysError } = await supabase
       .from('docket_attorneys')
       .update({ attorney_id: authData.user.id })
@@ -76,6 +77,42 @@ export async function POST(request: NextRequest) {
       console.log('Error updating docket attorneys:', docketAttorneysError)
     } else {
       console.log('Updated docket attorney references')
+    }
+
+    // 3. Update docket_attorneys.assigned_by
+    const { error: docketAttorneysAssignedByError } = await supabase
+      .from('docket_attorneys')
+      .update({ assigned_by: authData.user.id })
+      .eq('assigned_by', existingStaff.id)
+      
+    if (docketAttorneysAssignedByError) {
+      console.log('Error updating docket attorneys assigned_by:', docketAttorneysAssignedByError)
+    } else {
+      console.log('Updated docket attorney assigned_by references')
+    }
+
+    // 4. Update dockets.created_by
+    const { error: docketsCreatedByError } = await supabase
+      .from('dockets')
+      .update({ created_by: authData.user.id })
+      .eq('created_by', existingStaff.id)
+      
+    if (docketsCreatedByError) {
+      console.log('Error updating dockets created_by:', docketsCreatedByError)
+    } else {
+      console.log('Updated docket created_by references')
+    }
+
+    // 5. Update sms_templates.created_by
+    const { error: smsTemplatesCreatedByError } = await supabase
+      .from('sms_templates')
+      .update({ created_by: authData.user.id })
+      .eq('created_by', existingStaff.id)
+      
+    if (smsTemplatesCreatedByError) {
+      console.log('Error updating sms_templates created_by:', smsTemplatesCreatedByError)
+    } else {
+      console.log('Updated sms template created_by references')
     }
 
     // Delete the old staff user record first (this should work now that foreign keys are updated)
