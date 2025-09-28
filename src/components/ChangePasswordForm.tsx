@@ -45,12 +45,20 @@ export default function ChangePasswordForm() {
       const data = await response.json()
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Password updated successfully!' })
+        setMessage({ 
+          type: 'success', 
+          text: 'Password updated successfully! For security, we recommend signing out and logging back in with your new password.' 
+        })
         setFormData({
           currentPassword: '',
           newPassword: '',
           confirmPassword: ''
         })
+        
+        // Auto-close modal after 3 seconds
+        setTimeout(() => {
+          window.location.href = '/admin/enhanced-dashboard'
+        }, 3000)
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to update password' })
       }
@@ -152,6 +160,30 @@ export default function ChangePasswordForm() {
                   }`}>
                     {message.text}
                   </p>
+                  {message.type === 'success' && (
+                    <div className="mt-3">
+                      <p className="text-xs text-green-600 mb-2">
+                        Automatically redirecting to dashboard in 3 seconds...
+                      </p>
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => window.location.href = '/admin/enhanced-dashboard'}
+                          className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                        >
+                          Go to Dashboard
+                        </button>
+                        <form action="/api/auth/signout" method="post" className="inline">
+                          <button
+                            type="submit"
+                            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                          >
+                            Sign Out & Login
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

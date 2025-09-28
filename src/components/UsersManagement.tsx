@@ -193,7 +193,8 @@ export default function UsersManagement() {
         setShowPasswordModal(false)
         setSelectedUser(null)
         setNewPassword('')
-        alert(`Password updated successfully for ${selectedUser.name}!`)
+        alert(`Password updated successfully for ${selectedUser.name}!\n\nPlease share the new password securely with them.`)
+        await fetchUsers() // Refresh the user list
       } else {
         const errorData = await response.json()
         alert(`Error: ${errorData.error}`)
@@ -580,7 +581,7 @@ export default function UsersManagement() {
                 <div className="bg-blue-50 p-3 rounded-md">
                   <p className="text-sm text-blue-800">
                     <strong>Note:</strong> The user will need to use this password to log in. 
-                    Consider sharing this password securely with them.
+                    Make sure to share this password securely with them through a secure channel (not email or SMS).
                   </p>
                 </div>
                 <div className="flex justify-end space-x-3 pt-4">
