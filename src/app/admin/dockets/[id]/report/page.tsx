@@ -382,6 +382,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
               border-collapse: collapse; 
               margin-top: 15px;
               font-size: 10px;
+              table-layout: fixed;
             }
             th, td { 
               border: 1px solid #000; 
@@ -390,6 +391,19 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
               font-size: 10px;
               vertical-align: top;
             }
+            /* Specific column widths */
+            td:nth-child(1), th:nth-child(1) { width: 10%; } /* Client */
+            td:nth-child(2), th:nth-child(2) { width: 8%; } /* Case # */
+            td:nth-child(3), th:nth-child(3) { width: 12%; } /* Charge */
+            td:nth-child(4), th:nth-child(4) { width: 12%; } /* Priors */
+            td:nth-child(5), th:nth-child(5) { width: 6%; } /* Jail/Bond */
+            td:nth-child(6), th:nth-child(6) { width: 4%; } /* Disc */
+            td:nth-child(7), th:nth-child(7) { width: 4%; } /* Tox */
+            td:nth-child(8), th:nth-child(8) { width: 10%; } /* Assigned Attorney */
+            td:nth-child(9), th:nth-child(9) { width: 8%; } /* In Court Attorneys */
+            td:nth-child(10), th:nth-child(10) { width: 12%; } /* Notes */
+            td:nth-child(11), th:nth-child(11) { width: 16%; } /* DA Offer - doubled width */
+            td:nth-child(12), th:nth-child(12) { width: 12%; } /* Court Action */
             th { 
               background-color: #f5f5f5; 
               font-weight: bold;
@@ -438,7 +452,7 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                 <th>Disc</th>
                 <th>Tox</th>
                 <th>Assigned<br/>Attorney</th>
-                <th>Primary/<br/>Secondary<br/>Attorney</th>
+                <th>In Court<br/>Attorneys</th>
                 <th>Notes</th>
                 <th>DA Offer</th>
                 <th>Court Action</th>
@@ -449,15 +463,15 @@ export default function DocketReportPage({ params }: DocketReportPageProps) {
                 const client = assignment.client
                 const clientData = editableData[assignment.id]
                 
-                // Find attorneys
-                const assignedAttorney = attorneys.find(a => a.id === clientData?.attorney_id)
+                // Find attorneys - use the original client attorney for assigned attorney
+                const assignedAttorney = client.attorney // Use the original client attorney
                 const primaryAttorney = attorneys.find(a => a.id === clientData?.primary_attorney_id)
                 const secondaryAttorney = attorneys.find(a => a.id === clientData?.secondary_attorney_id)
                 
-                // Combine primary and secondary attorneys into one cell
+                // Combine primary and secondary attorneys into one cell (just names, no labels)
                 const inCourtAttorneys = []
-                if (primaryAttorney?.name) inCourtAttorneys.push(`Primary: ${primaryAttorney.name}`)
-                if (secondaryAttorney?.name) inCourtAttorneys.push(`Secondary: ${secondaryAttorney.name}`)
+                if (primaryAttorney?.name) inCourtAttorneys.push(primaryAttorney.name)
+                if (secondaryAttorney?.name) inCourtAttorneys.push(secondaryAttorney.name)
                 const inCourtAttorneysText = inCourtAttorneys.length > 0 ? inCourtAttorneys.join('<br/>') : '-'
                 
                 return `
