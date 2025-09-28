@@ -179,20 +179,29 @@ export async function PATCH(request: NextRequest) {
     const supabase = await createClient()
     const body = await request.json()
     
+    console.log('PATCH request body:', body)
+    
     const { data: { user: authUser } } = await supabase.auth.getUser()
     if (!authUser) {
+      console.log('Unauthorized: No auth user found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    console.log('Auth user:', authUser.email)
 
     const { userId, newPassword } = body
 
     if (!userId || !newPassword) {
+      console.log('Missing required fields:', { userId: !!userId, newPassword: !!newPassword })
       return NextResponse.json({ error: 'User ID and new password are required' }, { status: 400 })
     }
 
     if (newPassword.length < 6) {
+      console.log('Password too short:', newPassword.length)
       return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 })
     }
+
+    console.log('Attempting to update password for user:', userId)
 
     // Update user password using admin API
     const supabaseAdmin = getSupabaseAdmin()
@@ -202,12 +211,18 @@ export async function PATCH(request: NextRequest) {
 
     if (updateError) {
       console.error('Error updating password:', updateError)
-      return NextResponse.json({ error: 'Failed to update password' }, { status: 400 })
+      return NextResponse.json({ error: `Failed to update password: ${updateError.message}` }, { status: 400 })
     }
 
+    console.log('Password updated successfully for user:', userId)
     return NextResponse.json({ message: 'Password updated successfully' })
   } catch (error) {
-    console.error('Unexpected error:', error)
+    console.error('Unexpected error in PATCH:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    })
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

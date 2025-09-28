@@ -178,16 +178,23 @@ export default function UsersManagement() {
     setSubmitting(true)
 
     try {
+      const requestBody = {
+        userId: selectedUser.id,
+        newPassword: newPassword
+      }
+      
+      console.log('Sending password reset request:', requestBody)
+      
       const response = await fetch('/api/staff-users', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: selectedUser.id,
-          newPassword: newPassword
-        }),
+        body: JSON.stringify(requestBody),
       })
+      
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
 
       if (response.ok) {
         setShowPasswordModal(false)
@@ -197,6 +204,7 @@ export default function UsersManagement() {
         await fetchUsers() // Refresh the user list
       } else {
         const errorData = await response.json()
+        console.error('Password reset error response:', errorData)
         alert(`Error: ${errorData.error}`)
       }
     } catch (error) {
