@@ -238,22 +238,22 @@ export default function UsersManagement() {
 
   const recreateUserAuth = async (user: StaffUser) => {
     try {
-      const response = await fetch('/api/staff-users', {
+      const response = await fetch('/api/recreate-user-auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          password: newPassword,
-          is_active: user.is_active
+          userId: user.id,
+          newPassword: newPassword
         }),
       })
 
       if (response.ok) {
         alert(`Authentication account recreated successfully for ${user.name}!\n\nThey can now log in with their email and the password you set.`)
+        setShowPasswordModal(false)
+        setSelectedUser(null)
+        setNewPassword('')
         await fetchUsers()
       } else {
         const errorData = await response.json()
