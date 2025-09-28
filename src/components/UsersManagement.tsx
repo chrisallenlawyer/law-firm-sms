@@ -205,7 +205,16 @@ export default function UsersManagement() {
       } else {
         const errorData = await response.json()
         console.error('Password reset error response:', errorData)
-        alert(`Error: ${errorData.error}`)
+        
+        if (errorData.error.includes('User not found in authentication system')) {
+          const recreate = confirm(`This user exists in the database but not in the authentication system.\n\nWould you like to recreate their authentication account?\n\nThis will allow them to log in with their email and the password you just set.`)
+          
+          if (recreate) {
+            await recreateUserAuth(selectedUser)
+          }
+        } else {
+          alert(`Error: ${errorData.error}`)
+        }
       }
     } catch (error) {
       console.error('Error updating password:', error)
@@ -225,6 +234,35 @@ export default function UsersManagement() {
     })
     setEditingUser(null)
     setShowForm(false)
+  }
+
+  const recreateUserAuth = async (user: StaffUser) => {
+    try {
+      const response = await fetch('/api/staff-users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          password: newPassword,
+          is_active: user.is_active
+        }),
+      })
+
+      if (response.ok) {
+        alert(`Authentication account recreated successfully for ${user.name}!\n\nThey can now log in with their email and the password you set.`)
+        await fetchUsers()
+      } else {
+        const errorData = await response.json()
+        alert(`Error recreating user: ${errorData.error}`)
+      }
+    } catch (error) {
+      console.error('Error recreating user:', error)
+      alert('An error occurred while recreating the user.')
+    }
   }
 
   const resetPasswordForm = () => {

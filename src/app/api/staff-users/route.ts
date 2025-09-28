@@ -52,28 +52,57 @@ export async function POST(request: NextRequest) {
 
     if (authError) {
       console.error('Error creating auth user:', authError)
-      return NextResponse.json({ error: 'Failed to create user account' }, { status: 400 })
+      return NextResponse.json({ error: `Failed to create user account: ${authError.message}` }, { status: 400 })
     }
 
-    // Create staff user record
-    const { data: staffData, error: staffError } = await supabase
+    // Check if staff user already exists (for recreation scenarios)
+    const { data: existingStaff } = await supabase
       .from('staff_users')
-      .insert({
-        id: authData.user.id,
-        name,
-        email,
-        role,
-        is_active: true
-      })
-      .select()
+      .select('id')
+      .eq('email', email)
       .single()
 
-    if (staffError) {
-      console.error('Error creating staff user:', staffError)
-      // Clean up auth user if staff creation fails
-      const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
-      return NextResponse.json({ error: 'Failed to create staff user record' }, { status: 400 })
+    let staffData
+    if (existingStaff) {
+      // Update existing staff user with new auth ID
+      const { data: updatedStaff, error: updateError } = await supabase
+        .from('staff_users')
+        .update({
+          id: authData.user.id,
+          name,
+          role,
+          is_active: true
+        })
+        .eq('email', email)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error('Error updating existing staff user:', updateError)
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
+        return NextResponse.json({ error: 'Failed to update existing staff user record' }, { status: 400 })
+      }
+      staffData = updatedStaff
+    } else {
+      // Create new staff user record
+      const { data: newStaff, error: staffError } = await supabase
+        .from('staff_users')
+        .insert({
+          id: authData.user.id,
+          name,
+          email,
+          role,
+          is_active: true
+        })
+        .select()
+        .single()
+
+      if (staffError) {
+        console.error('Error creating staff user:', staffError)
+        await supabaseAdmin.auth.admin.deleteUser(authData.user.id)
+        return NextResponse.json({ error: 'Failed to create staff user record' }, { status: 400 })
+      }
+      staffData = newStaff
     }
 
     return NextResponse.json({ user: staffData })
@@ -205,6 +234,19 @@ export async function PATCH(request: NextRequest) {
 
     // Update user password using admin API
     const supabaseAdmin = getSupabaseAdmin()
+    
+    // First, verify the user exists in Auth
+    const { data: targetUser, error: getUserError } = await supabaseAdmin.auth.admin.getUserById(userId)
+    
+    if (getUserError || !targetUser.user) {
+      console.error('User not found in Auth:', getUserError)
+      return NextResponse.json({ 
+        error: `User not found in authentication system. This user may need to be recreated.` 
+      }, { status: 400 })
+    }
+    
+    console.log('User found in Auth, proceeding with password update')
+    
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
       password: newPassword
     })
