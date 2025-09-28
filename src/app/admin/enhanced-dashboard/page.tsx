@@ -62,6 +62,12 @@ export default async function EnhancedDashboard() {
               <p className="text-gray-600">Welcome back, {user.name}</p>
             </div>
             <div className="flex items-center space-x-4">
+              <Link
+                href="/admin/change-password"
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              >
+                Change Password
+              </Link>
               <span className="text-sm text-gray-500">Role: {user.role}</span>
               <form action="/api/auth/signout" method="post">
                 <button

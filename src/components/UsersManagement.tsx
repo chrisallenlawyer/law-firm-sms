@@ -27,6 +27,9 @@ export default function UsersManagement() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingUser, setEditingUser] = useState<StaffUser | null>(null)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null)
+  const [newPassword, setNewPassword] = useState('')
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
     email: '',
@@ -162,6 +165,47 @@ export default function UsersManagement() {
     }
   }
 
+  const handleResetPassword = async (user: StaffUser) => {
+    setSelectedUser(user)
+    setNewPassword('')
+    setShowPasswordModal(true)
+  }
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedUser || !newPassword) return
+
+    setSubmitting(true)
+
+    try {
+      const response = await fetch('/api/staff-users', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          newPassword: newPassword
+        }),
+      })
+
+      if (response.ok) {
+        setShowPasswordModal(false)
+        setSelectedUser(null)
+        setNewPassword('')
+        alert(`Password updated successfully for ${selectedUser.name}!`)
+      } else {
+        const errorData = await response.json()
+        alert(`Error: ${errorData.error}`)
+      }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      alert('An error occurred while updating the password.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -172,6 +216,12 @@ export default function UsersManagement() {
     })
     setEditingUser(null)
     setShowForm(false)
+  }
+
+  const resetPasswordForm = () => {
+    setSelectedUser(null)
+    setNewPassword('')
+    setShowPasswordModal(false)
   }
 
   if (loading) {
@@ -312,6 +362,12 @@ export default function UsersManagement() {
                             className="text-indigo-600 hover:text-indigo-900"
                           >
                             Edit
+                          </button>
+                          <button 
+                            onClick={() => handleResetPassword(user)}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Reset Password
                           </button>
                           <button 
                             onClick={() => handleToggleActive(user)}
@@ -487,6 +543,60 @@ export default function UsersManagement() {
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : editingUser ? 'Update User' : 'Add User'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Reset Modal */}
+      {showPasswordModal && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Reset Password for {selectedUser.name}
+              </h3>
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    placeholder="Enter new password (min 6 characters)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Password must be at least 6 characters long
+                  </p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    <strong>Note:</strong> The user will need to use this password to log in. 
+                    Consider sharing this password securely with them.
+                  </p>
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={resetPasswordForm}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting || newPassword.length < 6}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {submitting ? 'Updating...' : 'Update Password'}
                   </button>
                 </div>
               </form>

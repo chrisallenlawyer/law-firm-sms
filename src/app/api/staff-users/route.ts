@@ -168,3 +168,41 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+// PATCH - Update user password (admin only)
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const body = await request.json()
+    
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { userId, newPassword } = body
+
+    if (!userId || !newPassword) {
+      return NextResponse.json({ error: 'User ID and new password are required' }, { status: 400 })
+    }
+
+    if (newPassword.length < 6) {
+      return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 })
+    }
+
+    // Update user password using admin API
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+      password: newPassword
+    })
+
+    if (updateError) {
+      console.error('Error updating password:', updateError)
+      return NextResponse.json({ error: 'Failed to update password' }, { status: 400 })
+    }
+
+    return NextResponse.json({ message: 'Password updated successfully' })
+  } catch (error) {
+    console.error('Unexpected error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
