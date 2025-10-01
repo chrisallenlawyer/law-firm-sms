@@ -27,7 +27,7 @@ function getSpeechClient(): SpeechClient {
 
 
 export interface TranscriptionConfig {
-  encoding: 'WEBM_OPUS' | 'WEBM_VORBIS' | 'FLAC' | 'LINEAR16' | 'MP3' | 'OGG_OPUS' | 'WAV' | 'MULAW' | 'ALAW';
+  encoding: 'WEBM_OPUS' | 'FLAC' | 'LINEAR16' | 'MP3' | 'OGG_OPUS' | 'MULAW';
   sampleRateHertz: number;
   languageCode: string;
   enableSpeakerDiarization?: boolean;
