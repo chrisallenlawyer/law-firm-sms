@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         let config = { ...test.config };
         if (test.name.includes('AUTO')) {
           // Create new config without encoding and sample rate to let Google auto-detect
-          const { encoding, sampleRateHertz, ...autoConfig } = test.config;
+          const { encoding: _encoding, sampleRateHertz: _sampleRateHertz, ...autoConfig } = test.config;
           config = autoConfig as any;
         }
         
