@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 interface MediaFile {
@@ -54,12 +54,7 @@ export default function MediaFilesManagement() {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchMediaFiles()
-    fetchClients()
-  }, [pagination.page, searchTerm, statusFilter, clientFilter])
-
-  const fetchMediaFiles = async () => {
+  const fetchMediaFiles = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -84,9 +79,9 @@ export default function MediaFilesManagement() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [pagination.page, pagination.limit, searchTerm, statusFilter, clientFilter])
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('clients')
@@ -101,7 +96,12 @@ export default function MediaFilesManagement() {
     } catch (error) {
       console.error('Error fetching clients:', error)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    fetchMediaFiles()
+    fetchClients()
+  }, [fetchMediaFiles, fetchClients])
 
   const handleFileUpload = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -3,11 +3,11 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const mediaFileId = params.id;
+    const { id: mediaFileId } = await params;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -56,11 +56,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const mediaFileId = params.id;
+    const { id: mediaFileId } = await params;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -121,11 +121,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const mediaFileId = params.id;
+    const { id: mediaFileId } = await params;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

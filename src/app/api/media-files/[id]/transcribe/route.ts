@@ -4,11 +4,11 @@ import { transcribeAudioFromUrl, getAudioDuration } from '@/lib/google-cloud';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const mediaFileId = params.id;
+    const { id: mediaFileId } = await params;
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

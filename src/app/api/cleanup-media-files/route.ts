@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const supabase = await createClient();
     
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
     
     let cleanedUpCount = 0;
-    let errors: string[] = [];
+    const errors: string[] = [];
     
     // Process each file for cleanup
     for (const file of filesToCleanup) {
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     

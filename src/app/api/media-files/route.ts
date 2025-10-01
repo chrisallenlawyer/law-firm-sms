@@ -16,8 +16,29 @@ export async function GET(request: NextRequest) {
     
     const offset = (page - 1) * limit;
     
-    // Build query
-    let query = supabase
+    // Build base query
+    let baseQuery = supabase
+      .from('media_files')
+      .select('*');
+    
+    // Apply filters to base query
+    if (search) {
+      baseQuery = baseQuery.or(`original_filename.ilike.%${search}%,custom_filename.ilike.%${search}%,transcript.ilike.%${search}%,case_number.ilike.%${search}%`);
+    }
+    
+    if (clientId) {
+      baseQuery = baseQuery.eq('client_id', clientId);
+    }
+    
+    if (status) {
+      baseQuery = baseQuery.eq('transcription_status', status);
+    }
+    
+    // Get total count for pagination
+    const { count } = await baseQuery.select('*', { count: 'exact', head: true });
+    
+    // Build full query with relations and pagination
+    let fullQuery = supabase
       .from('media_files')
       .select(`
         *,
@@ -26,24 +47,21 @@ export async function GET(request: NextRequest) {
       `)
       .order('created_at', { ascending: false });
     
-    // Apply filters
+    // Apply same filters to full query
     if (search) {
-      query = query.or(`original_filename.ilike.%${search}%,custom_filename.ilike.%${search}%,transcript.ilike.%${search}%,case_number.ilike.%${search}%`);
+      fullQuery = fullQuery.or(`original_filename.ilike.%${search}%,custom_filename.ilike.%${search}%,transcript.ilike.%${search}%,case_number.ilike.%${search}%`);
     }
     
     if (clientId) {
-      query = query.eq('client_id', clientId);
+      fullQuery = fullQuery.eq('client_id', clientId);
     }
     
     if (status) {
-      query = query.eq('transcription_status', status);
+      fullQuery = fullQuery.eq('transcription_status', status);
     }
     
-    // Get total count for pagination
-    const { count } = await query.select('*', { count: 'exact', head: true });
-    
     // Get paginated results
-    const { data: mediaFiles, error } = await query
+    const { data: mediaFiles, error } = await fullQuery
       .range(offset, offset + limit - 1);
     
     if (error) {

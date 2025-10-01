@@ -1,9 +1,7 @@
 import { SpeechClient } from '@google-cloud/speech';
-import { Storage } from '@google-cloud/storage';
 
 // Initialize Google Cloud clients
 let speechClient: SpeechClient | null = null;
-let storageClient: Storage | null = null;
 
 function getSpeechClient(): SpeechClient {
   if (!speechClient) {
@@ -27,27 +25,6 @@ function getSpeechClient(): SpeechClient {
   return speechClient;
 }
 
-function getStorageClient(): Storage {
-  if (!storageClient) {
-    const credentials = process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_JSON;
-    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
-    
-    if (!credentials || !projectId) {
-      throw new Error('Google Cloud credentials not configured. Please set GOOGLE_CLOUD_SERVICE_ACCOUNT_JSON and GOOGLE_CLOUD_PROJECT_ID environment variables.');
-    }
-
-    try {
-      const keyData = typeof credentials === 'string' ? JSON.parse(credentials) : credentials;
-      storageClient = new Storage({
-        projectId,
-        credentials: keyData,
-      });
-    } catch (error) {
-      throw new Error(`Failed to initialize Google Cloud Storage client: ${error}`);
-    }
-  }
-  return storageClient;
-}
 
 export interface TranscriptionConfig {
   encoding: 'WEBM_OPUS' | 'WEBM_VORBIS' | 'FLAC' | 'LINEAR16' | 'MP3' | 'OGG_OPUS' | 'WAV' | 'MULAW' | 'ALAW';
@@ -232,23 +209,3 @@ export function validateAudioFile(file: File): { valid: boolean; error?: string 
   return { valid: true };
 }
 
-/**
- * Generate a signed URL for temporary access to a file
- */
-export async function generateSignedUrl(bucketName: string, fileName: string, expiresInMinutes: number = 60): Promise<string> {
-  const storageClient = getStorageClient();
-  
-  try {
-    const [url] = await storageClient
-      .bucket(bucketName)
-      .file(fileName)
-      .getSignedUrl({
-        action: 'read',
-        expires: Date.now() + expiresInMinutes * 60 * 1000,
-      });
-    
-    return url;
-  } catch (error) {
-    throw new Error(`Failed to generate signed URL: ${error}`);
-  }
-}
