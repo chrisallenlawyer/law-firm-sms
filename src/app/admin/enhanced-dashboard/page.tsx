@@ -11,12 +11,16 @@ export default async function EnhancedDashboard() {
     { count: totalClients },
     { count: totalCourts },
     { count: upcomingDockets },
-    { count: activeCampaigns }
+    { count: activeCampaigns },
+    { count: totalMediaFiles },
+    { count: pendingTranscriptions }
   ] = await Promise.all([
     supabase.from('clients').select('*', { count: 'exact', head: true }),
     supabase.from('courts').select('*', { count: 'exact', head: true }),
     supabase.from('dockets').select('*', { count: 'exact', head: true }).gte('docket_date', new Date().toISOString().split('T')[0]),
-    supabase.from('sms_campaigns').select('*', { count: 'exact', head: true }).in('status', ['draft', 'scheduled', 'sending'])
+    supabase.from('sms_campaigns').select('*', { count: 'exact', head: true }).in('status', ['draft', 'scheduled', 'sending']),
+    supabase.from('media_files').select('*', { count: 'exact', head: true }),
+    supabase.from('media_files').select('*', { count: 'exact', head: true }).eq('transcription_status', 'pending')
   ])
 
   // Get upcoming dockets with court info
@@ -84,7 +88,7 @@ export default async function EnhancedDashboard() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-6 mb-8">
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="p-5">
               <div className="flex items-center">
@@ -159,6 +163,46 @@ export default async function EnhancedDashboard() {
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">Active Campaigns</dt>
                     <dd className="text-lg font-medium text-gray-900">{activeCampaigns || 0}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 6v10h6V6H9z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Media Files</dt>
+                    <dd className="text-lg font-medium text-gray-900">{totalMediaFiles || 0}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Pending Transcripts</dt>
+                    <dd className="text-lg font-medium text-gray-900">{pendingTranscriptions || 0}</dd>
                   </dl>
                 </div>
               </div>
@@ -260,23 +304,23 @@ export default async function EnhancedDashboard() {
               </Link>
 
               <Link
-                href="/admin/attorneys"
+                href="/admin/media-files"
                 className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
               >
                 <div>
                   <span className="rounded-lg inline-flex p-3 bg-blue-50 text-blue-700 ring-4 ring-white">
                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 6v10h6V6H9z" />
                     </svg>
                   </span>
                 </div>
                 <div className="mt-8">
                   <h3 className="text-lg font-bold text-black" style={{color: 'black', fontWeight: '900'}}>
                     <span className="absolute inset-0" aria-hidden="true" />
-                    Manage Attorneys
+                    Manage Transcripts
                   </h3>
                   <p className="mt-2 text-sm text-gray-500">
-                    Add and manage attorneys for client assignments
+                    Upload audio/video files and generate transcripts
                   </p>
                 </div>
               </Link>

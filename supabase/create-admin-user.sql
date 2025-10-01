@@ -22,3 +22,5 @@ ON CONFLICT (email) DO UPDATE SET
 
 -- After running this, you should be able to login with your email
 -- The system will use this email for authentication
+
+

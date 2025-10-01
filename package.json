@@ -9,9 +9,11 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "build:production": "npm run type-check && npm run lint && npm run build",
-    "deploy:preview": "npm run build:production"
+    "deploy:preview": "npm run build:production",
+    "cleanup-media": "node scripts/cleanup-media-files.js"
   },
   "dependencies": {
+    "@google-cloud/speech": "^7.2.0",
     "@headlessui/react": "^2.2.8",
     "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.16.2",

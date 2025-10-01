@@ -68,3 +68,5 @@ CREATE POLICY "Service role can manage all staff users" ON staff_users
   FOR ALL
   USING (auth.role() = 'service_role')
   WITH CHECK (auth.role() = 'service_role');
+
+

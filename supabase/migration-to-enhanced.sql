@@ -207,3 +207,5 @@ INSERT INTO staff_users (email, name, role)
 VALUES ('admin@yourlawfirm.com', 'Admin User', 'admin');
 
 
+
+

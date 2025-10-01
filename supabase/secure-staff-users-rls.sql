@@ -40,3 +40,5 @@ CREATE POLICY "Service role full access" ON staff_users
 
 -- Ensure RLS is enabled
 ALTER TABLE staff_users ENABLE ROW LEVEL SECURITY;
+
+

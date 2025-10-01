@@ -15,3 +15,5 @@ VALUES (
 
 -- STEP 2: Verify the user was created
 SELECT id, email, name, role, is_active FROM staff_users WHERE email = 'admin@yourdomain.com';
+
+

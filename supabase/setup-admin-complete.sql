@@ -35,3 +35,5 @@ SELECT '1. Go to Supabase Dashboard > Authentication > Users' as step;
 SELECT '2. Click "Add User" and create a user with the same email as above' as step;
 SELECT '3. Set a password for this user' as step;
 SELECT '4. Try logging in with the email and password you just created' as step;
+
+
