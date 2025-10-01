@@ -43,14 +43,12 @@ export async function POST(
       return NextResponse.json({ error: 'Media file not found' }, { status: 404 });
     }
     
-    // Check if file is already being processed or completed
+    // Check if file is already being processed
     if (mediaFile.transcription_status === 'processing') {
       return NextResponse.json({ error: 'Transcription already in progress' }, { status: 409 });
     }
     
-    if (mediaFile.transcription_status === 'completed') {
-      return NextResponse.json({ error: 'Transcription already completed' }, { status: 409 });
-    }
+    // Allow re-transcription of completed files (removed the completed check)
     
     // Check if media file still exists
     if (mediaFile.media_file_deleted) {
