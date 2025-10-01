@@ -232,7 +232,7 @@ export default function MediaFilesManagement() {
                   required
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  Supported formats: MP3, WAV, MP4, WebM, OGG, FLAC. Max size: 500MB
+                  Supported formats: MP3, WAV, MP4, WebM, OGG, FLAC. Max size: 50MB (Supabase free plan)
                 </p>
               </div>
 
