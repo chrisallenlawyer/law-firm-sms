@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         console.log(`Testing encoding: ${test.name}`);
         
         // Special handling for auto-detection
-        let config = { ...test.config };
+        const config = { ...test.config };
         if (test.name.includes('AUTO')) {
           // Remove encoding and sample rate to let Google auto-detect
           delete config.encoding;
