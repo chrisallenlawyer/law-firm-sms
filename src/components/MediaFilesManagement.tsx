@@ -110,15 +110,52 @@ export default function MediaFilesManagement() {
 
     try {
       setUploading(true)
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-      formData.append('customFilename', customFilename)
-      formData.append('clientId', selectedClientId)
-      formData.append('caseNumber', caseNumber)
+      
+      // Validate file size (4MB limit for Vercel free plan)
+      const maxSizeBytes = 4 * 1024 * 1024; // 4MB
+      if (selectedFile.size > maxSizeBytes) {
+        throw new Error('File size exceeds 4MB limit (Vercel free plan)')
+      }
+      
+      // Generate filename with date/time
+      const now = new Date()
+      const dateStr = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
+      const fileExtension = selectedFile.name.split('.').pop()
+      const baseFilename = `${dateStr}_${Math.random().toString(36).substr(2, 9)}`
+      const finalFilename = customFilename 
+        ? `${dateStr}_${customFilename.replace(/[^a-zA-Z0-9-_]/g, '_')}_${baseFilename}.${fileExtension}`
+        : `${baseFilename}.${fileExtension}`
+      
+      // Determine file type
+      const fileType = selectedFile.type.startsWith('video/') ? 'video' : 'audio'
+      
+      // Upload directly to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('media-files')
+        .upload(finalFilename, selectedFile, {
+          cacheControl: '3600',
+          upsert: false
+        })
+      
+      if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`)
+      }
 
+      // Create database record via API
       const response = await fetch('/api/media-files', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          original_filename: selectedFile.name,
+          supabase_file_path: uploadData.path,
+          file_type: fileType,
+          file_size: selectedFile.size,
+          custom_filename: customFilename || null,
+          client_id: selectedClientId || null,
+          case_number: caseNumber || null
+        })
       })
 
       const data = await response.json()
@@ -136,11 +173,13 @@ export default function MediaFilesManagement() {
         
         alert('File uploaded successfully!')
       } else {
-        alert(`Upload failed: ${data.error}`)
+        // If database insert fails, clean up the uploaded file
+        await supabase.storage.from('media-files').remove([uploadData.path])
+        throw new Error(data.error)
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Upload failed. Please try again.')
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setUploading(false)
     }
@@ -232,7 +271,7 @@ export default function MediaFilesManagement() {
                   required
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  Supported formats: MP3, WAV, MP4, WebM, OGG, FLAC. Max size: 50MB (Supabase free plan)
+                  Supported formats: MP3, WAV, MP4, WebM, OGG, FLAC. Max size: 4MB (Vercel free plan)
                 </p>
               </div>
 

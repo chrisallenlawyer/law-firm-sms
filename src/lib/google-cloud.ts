@@ -175,7 +175,7 @@ export async function getAudioDuration(audioUrl: string): Promise<number> {
  * Validate audio file format and size
  */
 export function validateAudioFile(file: File): { valid: boolean; error?: string } {
-  const maxSizeBytes = 50 * 1024 * 1024; // 50MB - Supabase free plan limit
+  const maxSizeBytes = 4 * 1024 * 1024; // 4MB - Vercel free plan limit (4.5MB with buffer)
   const allowedTypes = [
     'audio/mpeg',
     'audio/mp3',
@@ -192,7 +192,7 @@ export function validateAudioFile(file: File): { valid: boolean; error?: string 
   ];
 
   if (file.size > maxSizeBytes) {
-    return { valid: false, error: 'File size exceeds 50MB limit (Supabase free plan)' };
+    return { valid: false, error: 'File size exceeds 4MB limit (Vercel free plan)' };
   }
 
   if (!allowedTypes.includes(file.type)) {

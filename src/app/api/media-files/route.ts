@@ -111,58 +111,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
     
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const customFilename = formData.get('customFilename') as string;
-    const clientId = formData.get('clientId') as string;
-    const caseNumber = formData.get('caseNumber') as string;
+    const body = await request.json();
+    const { 
+      original_filename, 
+      supabase_file_path, 
+      file_type, 
+      file_size, 
+      custom_filename, 
+      client_id, 
+      case_number 
+    } = body;
     
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
-    
-    // Validate file
-    const validation = validateAudioFile(file);
-    if (!validation.valid) {
-      return NextResponse.json({ error: validation.error }, { status: 400 });
-    }
-    
-    // Generate filename with date/time
-    const now = new Date();
-    const dateStr = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const fileExtension = file.name.split('.').pop();
-    const baseFilename = `${dateStr}_${Math.random().toString(36).substr(2, 9)}`;
-    const finalFilename = customFilename 
-      ? `${dateStr}_${customFilename.replace(/[^a-zA-Z0-9-_]/g, '_')}_${baseFilename}.${fileExtension}`
-      : `${baseFilename}.${fileExtension}`;
-    
-    // Determine file type
-    const fileType = file.type.startsWith('video/') ? 'video' : 'audio';
-    
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('media-files')
-      .upload(finalFilename, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-    
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
+    if (!original_filename || !supabase_file_path || !file_type) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
     // Create database record
     const { data: mediaFile, error: dbError } = await supabase
       .from('media_files')
       .insert({
-        original_filename: file.name,
-        supabase_file_path: uploadData.path,
-        file_type: fileType,
-        file_size: file.size,
-        custom_filename: customFilename || null,
-        client_id: clientId || null,
-        case_number: caseNumber || null,
+        original_filename,
+        supabase_file_path,
+        file_type,
+        file_size: file_size || null,
+        custom_filename: custom_filename || null,
+        client_id: client_id || null,
+        case_number: case_number || null,
         uploaded_by: staffUser.id,
         transcription_status: 'pending'
       })
@@ -176,7 +150,7 @@ export async function POST(request: NextRequest) {
     if (dbError) {
       console.error('Database error:', dbError);
       // Clean up uploaded file if database insert fails
-      await supabase.storage.from('media-files').remove([uploadData.path]);
+      await supabase.storage.from('media-files').remove([supabase_file_path]);
       return NextResponse.json({ error: 'Failed to save file record' }, { status: 500 });
     }
     
