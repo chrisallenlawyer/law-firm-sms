@@ -224,8 +224,7 @@ export async function transcribeAudioFromUrl(
     
     console.log('Google Cloud operation completed:', {
       hasResults: !!operation.results,
-      resultsCount: operation.results?.length || 0,
-      operationName: operation.name
+      resultsCount: operation.results?.length || 0
     });
     
     if (!operation.results || operation.results.length === 0) {

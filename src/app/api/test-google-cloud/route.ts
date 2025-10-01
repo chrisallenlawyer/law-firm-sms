@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       const { SpeechClient } = await import('@google-cloud/speech');
       
       // Try to create a client (this will fail if credentials are invalid)
-      const speechClient = new SpeechClient({
+      new SpeechClient({
         projectId,
         credentials: keyData,
       });
