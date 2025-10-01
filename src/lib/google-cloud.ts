@@ -334,3 +334,4 @@ export function validateAudioFile(file: File): { valid: boolean; error?: string 
   return { valid: true };
 }
 
+// Force deployment from working commit d3794dd
