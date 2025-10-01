@@ -96,9 +96,9 @@ export async function transcribeAudioFromUrl(
     };
 
     console.log('Starting transcription for:', audioUrl);
-    const response = await speechClient.longRunningRecognize(request);
     
-    // Wait for the operation to complete
+    // Use recognize for shorter files, longRunningRecognize for longer files
+    const [response] = await speechClient.longRunningRecognize(request);
     const [operation] = await response.promise();
     
     if (!operation.results || operation.results.length === 0) {
