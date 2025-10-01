@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     const { data: staffUser, error: staffError } = await supabase
       .from('staff_users')
       .select('id, role')
-      .eq('id', user.id)
+      .eq('email', user.email)
       .single();
     
     if (staffError || !staffUser) {

@@ -15,7 +15,7 @@ export async function POST() {
     const { data: staffUser, error: staffError } = await supabase
       .from('staff_users')
       .select('id, role')
-      .eq('id', user.id)
+      .eq('email', user.email)
       .single();
     
     if (staffError || !staffUser) {
@@ -119,7 +119,7 @@ export async function GET() {
     const { data: staffUser, error: staffError } = await supabase
       .from('staff_users')
       .select('id, role')
-      .eq('id', user.id)
+      .eq('email', user.email)
       .single();
     
     if (staffError || !staffUser) {
