@@ -1,7 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  serverExternalPackages: ['@google-cloud/speech', '@google-cloud/storage'],
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
