@@ -16,26 +16,26 @@ export async function GET(request: NextRequest) {
     
     const offset = (page - 1) * limit;
     
-    // Build base query
-    let baseQuery = supabase
+    // Build query for count
+    let countQuery = supabase
       .from('media_files')
-      .select('*');
+      .select('*', { count: 'exact', head: true });
     
-    // Apply filters to base query
+    // Apply filters to count query
     if (search) {
-      baseQuery = baseQuery.or(`original_filename.ilike.%${search}%,custom_filename.ilike.%${search}%,transcript.ilike.%${search}%,case_number.ilike.%${search}%`);
+      countQuery = countQuery.or(`original_filename.ilike.%${search}%,custom_filename.ilike.%${search}%,transcript.ilike.%${search}%,case_number.ilike.%${search}%`);
     }
     
     if (clientId) {
-      baseQuery = baseQuery.eq('client_id', clientId);
+      countQuery = countQuery.eq('client_id', clientId);
     }
     
     if (status) {
-      baseQuery = baseQuery.eq('transcription_status', status);
+      countQuery = countQuery.eq('transcription_status', status);
     }
     
     // Get total count for pagination
-    const { count } = await baseQuery.select('*', { count: 'exact', head: true });
+    const { count } = await countQuery;
     
     // Build full query with relations and pagination
     let fullQuery = supabase

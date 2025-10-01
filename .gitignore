@@ -12,3 +12,5 @@ yarn-error.log*
 
 # macOS metadata files
 ._*
+._*
+.DS_Store
