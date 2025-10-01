@@ -25,7 +25,7 @@ export default async function MediaFilesPage() {
     .from('media_files')
     .select(`
       *,
-      client:clients (id, name),
+      client:clients (id, first_name, last_name),
       uploaded_by_user:staff_users (id, name, email)
     `)
     .order('created_at', { ascending: false })
@@ -192,7 +192,7 @@ export default async function MediaFilesPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {file.client?.name || 'Not linked'}
+                          {file.client ? `${file.client.first_name} ${file.client.last_name}` : 'Not linked'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${

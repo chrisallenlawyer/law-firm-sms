@@ -132,7 +132,7 @@ export async function POST(
         .from('media_files')
         .select(`
           *,
-          client:clients (id, name),
+          client:clients (id, first_name, last_name),
           uploaded_by_user:staff_users (id, name, email)
         `)
         .eq('id', mediaFileId)

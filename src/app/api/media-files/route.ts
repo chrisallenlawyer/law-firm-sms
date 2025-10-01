@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
       .from('media_files')
       .select(`
         *,
-        client:clients (id, name),
+        client:clients (id, first_name, last_name),
         uploaded_by_user:staff_users (id, name, email)
       `)
       .order('created_at', { ascending: false });
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
       })
       .select(`
         *,
-        client:clients (id, name),
+        client:clients (id, first_name, last_name),
         uploaded_by_user:staff_users (id, name, email)
       `)
       .single();

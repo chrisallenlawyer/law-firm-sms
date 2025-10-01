@@ -19,13 +19,14 @@ interface MediaFile {
   created_at: string
   transcribed_at?: string
   transcript_completed_at?: string
-  client?: { id: string; name: string }
+  client?: { id: string; first_name: string; last_name: string }
   uploaded_by_user?: { id: string; name: string; email: string }
 }
 
 interface Client {
   id: string
-  name: string
+  first_name: string
+  last_name: string
 }
 
 interface Pagination {
@@ -85,8 +86,8 @@ export default function MediaFilesManagement() {
     try {
       const { data, error } = await supabase
         .from('clients')
-        .select('id, name')
-        .order('name')
+        .select('id, first_name, last_name')
+        .order('first_name')
 
       if (error) {
         console.error('Error fetching clients:', error)
@@ -227,7 +228,7 @@ export default function MediaFilesManagement() {
                   type="file"
                   accept="audio/*,video/*"
                   onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 />
                 <p className="mt-1 text-sm text-gray-500">
@@ -242,7 +243,7 @@ export default function MediaFilesManagement() {
                   value={customFilename}
                   onChange={(e) => setCustomFilename(e.target.value)}
                   placeholder="e.g., Client Interview - John Doe"
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
               </div>
 
@@ -251,12 +252,12 @@ export default function MediaFilesManagement() {
                 <select
                   value={selectedClientId}
                   onChange={(e) => setSelectedClientId(e.target.value)}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 >
                   <option value="">Select a client</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.name}
+                      {client.first_name} {client.last_name}
                     </option>
                   ))}
                 </select>
@@ -269,7 +270,7 @@ export default function MediaFilesManagement() {
                   value={caseNumber}
                   onChange={(e) => setCaseNumber(e.target.value)}
                   placeholder="e.g., 2024-CR-001"
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
               </div>
 
@@ -301,14 +302,14 @@ export default function MediaFilesManagement() {
               placeholder="Search files..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             />
           </div>
           <div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             >
               <option value="">All Statuses</option>
               <option value="pending">Pending</option>
@@ -321,14 +322,14 @@ export default function MediaFilesManagement() {
             <select
               value={clientFilter}
               onChange={(e) => setClientFilter(e.target.value)}
-              className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900"
             >
               <option value="">All Clients</option>
-              {clients.map((client) => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.first_name} {client.last_name}
+                    </option>
+                  ))}
             </select>
           </div>
         </div>
@@ -382,9 +383,9 @@ export default function MediaFilesManagement() {
                         {file.file_type} • {file.case_number || 'No case number'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {file.client?.name || 'Not linked'}
-                    </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {file.client ? `${file.client.first_name} ${file.client.last_name}` : 'Not linked'}
+                        </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         file.transcription_status === 'completed' 
