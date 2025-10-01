@@ -115,7 +115,6 @@ export async function transcribeAudioFromUrl(
     let fullTranscript = '';
     let totalConfidence = 0;
     let resultCount = 0;
-    let speakerCount = 0;
 
     for (const result of operation.results) {
       if (result.alternatives && result.alternatives.length > 0) {
@@ -125,12 +124,6 @@ export async function transcribeAudioFromUrl(
           totalConfidence += alternative.confidence || 0;
           resultCount++;
         }
-      }
-
-      // Count speakers if diarization is enabled
-      if (result.words) {
-        const speakers = new Set(result.words.map(word => word.speakerTag || 0));
-        speakerCount = Math.max(speakerCount, speakers.size);
       }
     }
 
@@ -142,7 +135,7 @@ export async function transcribeAudioFromUrl(
       confidence: averageConfidence,
       languageCode: defaultConfig.languageCode,
       duration: 0, // Duration will be calculated separately
-      speakerCount: speakerCount > 0 ? speakerCount : undefined
+      speakerCount: undefined // Speaker diarization temporarily disabled due to TypeScript issues
     };
 
   } catch (error) {
