@@ -118,11 +118,11 @@ export async function POST(request: NextRequest) {
         console.log(`Testing encoding: ${test.name}`);
         
         // Special handling for auto-detection
-        const config = { ...test.config };
+        let config = { ...test.config };
         if (test.name.includes('AUTO')) {
-          // Remove encoding and sample rate to let Google auto-detect
-          delete config.encoding;
-          delete config.sampleRateHertz;
+          // Create new config without encoding and sample rate to let Google auto-detect
+          const { encoding, sampleRateHertz, ...autoConfig } = test.config;
+          config = autoConfig as any;
         }
         
         const result = await transcribeAudioFromSupabaseUrl(
