@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { transcribeAudioFromUrl, getAudioDuration } from '@/lib/google-cloud';
+import { transcribeAudioFromSupabaseUrl, getAudioDuration } from '@/lib/google-cloud';
 
 export async function POST(
   request: NextRequest,
@@ -84,13 +84,17 @@ export async function POST(
       // Get file duration
       const duration = await getAudioDuration(signedUrlData.signedUrl);
       
-      // Transcribe the audio
-      const transcriptionResult = await transcribeAudioFromUrl(signedUrlData.signedUrl, {
-        // Configure based on file type
-        model: mediaFile.file_type === 'video' ? 'video' : 'phone_call',
-        enableSpeakerDiarization: true,
-        diarizationSpeakerCount: 2,
-      });
+      // Transcribe the audio using the new Supabase-compatible function
+      const transcriptionResult = await transcribeAudioFromSupabaseUrl(
+        signedUrlData.signedUrl,
+        mediaFile.original_filename,
+        {
+          // Configure based on file type
+          model: mediaFile.file_type === 'video' ? 'video' : 'phone_call',
+          enableSpeakerDiarization: true,
+          diarizationSpeakerCount: 2,
+        }
+      );
       
       if (transcriptionResult.error) {
         // Update status to failed with error message

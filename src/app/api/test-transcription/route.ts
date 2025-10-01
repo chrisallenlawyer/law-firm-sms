@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { transcribeAudioFromUrl, getAudioDuration } from '@/lib/google-cloud';
+import { transcribeAudioFromSupabaseUrl, getAudioDuration } from '@/lib/google-cloud';
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,11 +71,15 @@ export async function POST(request: NextRequest) {
 
       // Test transcription with detailed logging
       console.log('Starting transcription...');
-      const transcriptionResult = await transcribeAudioFromUrl(signedUrlData.signedUrl, {
-        model: mediaFile.file_type === 'video' ? 'video' : 'phone_call',
-        enableSpeakerDiarization: true,
-        diarizationSpeakerCount: 2,
-      });
+      const transcriptionResult = await transcribeAudioFromSupabaseUrl(
+        signedUrlData.signedUrl,
+        mediaFile.original_filename,
+        {
+          model: mediaFile.file_type === 'video' ? 'video' : 'phone_call',
+          enableSpeakerDiarization: true,
+          diarizationSpeakerCount: 2,
+        }
+      );
       
       console.log('Transcription result:', {
         hasError: !!transcriptionResult.error,

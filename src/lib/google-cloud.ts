@@ -1,7 +1,9 @@
 import { SpeechClient } from '@google-cloud/speech';
+import { Storage } from '@google-cloud/storage';
 
 // Initialize Google Cloud clients
 let speechClient: SpeechClient | null = null;
+let storageClient: Storage | null = null;
 
 function getSpeechClient(): SpeechClient {
   if (!speechClient) {
@@ -25,6 +27,28 @@ function getSpeechClient(): SpeechClient {
   return speechClient;
 }
 
+function getStorageClient(): Storage {
+  if (!storageClient) {
+    const credentials = process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_JSON;
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+    
+    if (!credentials || !projectId) {
+      throw new Error('Google Cloud credentials not configured. Please set GOOGLE_CLOUD_SERVICE_ACCOUNT_JSON and GOOGLE_CLOUD_PROJECT_ID environment variables.');
+    }
+
+    try {
+      const keyData = typeof credentials === 'string' ? JSON.parse(credentials) : credentials;
+      storageClient = new Storage({
+        projectId,
+        credentials: keyData,
+      });
+    } catch (error) {
+      throw new Error(`Failed to initialize Google Cloud Storage client: ${error}`);
+    }
+  }
+  return storageClient;
+}
+
 
 export interface TranscriptionConfig {
   encoding: 'WEBM_OPUS' | 'FLAC' | 'LINEAR16' | 'MP3' | 'OGG_OPUS' | 'MULAW';
@@ -43,6 +67,96 @@ export interface TranscriptionResult {
   duration: number;
   speakerCount?: number;
   error?: string;
+}
+
+/**
+ * Download file from Supabase URL and upload to Google Cloud Storage temporarily
+ */
+async function uploadToGCS(supabaseUrl: string, filename: string): Promise<string> {
+  const storage = getStorageClient();
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID!;
+  const bucketName = `${projectId}-temp-transcription`;
+  
+  try {
+    // Download file from Supabase
+    const response = await fetch(supabaseUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to download file from Supabase: ${response.statusText}`);
+    }
+    
+    const fileBuffer = await response.arrayBuffer();
+    
+    // Ensure bucket exists
+    const bucket = storage.bucket(bucketName);
+    const [exists] = await bucket.exists();
+    if (!exists) {
+      await bucket.create();
+    }
+    
+    // Upload to GCS with unique filename
+    const gcsFilename = `transcription-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${filename}`;
+    const file = bucket.file(gcsFilename);
+    
+    await file.save(Buffer.from(fileBuffer));
+    
+    // Return GCS URI
+    return `gs://${bucketName}/${gcsFilename}`;
+  } catch (error) {
+    throw new Error(`Failed to upload to GCS: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+/**
+ * Delete temporary file from Google Cloud Storage
+ */
+async function deleteFromGCS(gcsUri: string): Promise<void> {
+  try {
+    const storage = getStorageClient();
+    const [bucketName, filename] = gcsUri.replace('gs://', '').split('/', 2);
+    const bucket = storage.bucket(bucketName);
+    await bucket.file(filename).delete();
+  } catch (error) {
+    console.error('Failed to delete temporary file from GCS:', error);
+    // Don't throw - this is cleanup, not critical
+  }
+}
+
+/**
+ * Transcribe audio from a Supabase URL by temporarily uploading to GCS
+ */
+export async function transcribeAudioFromSupabaseUrl(
+  supabaseUrl: string,
+  filename: string,
+  config: Partial<TranscriptionConfig> = {}
+): Promise<TranscriptionResult> {
+  let gcsUri: string | null = null;
+  
+  try {
+    // Upload to GCS temporarily
+    console.log('Uploading file to Google Cloud Storage...');
+    gcsUri = await uploadToGCS(supabaseUrl, filename);
+    console.log('File uploaded to GCS:', gcsUri);
+    
+    // Transcribe from GCS URI
+    const result = await transcribeAudioFromUrl(gcsUri, config);
+    
+    return result;
+  } catch (error) {
+    console.error('Transcription error:', error);
+    return {
+      transcript: '',
+      confidence: 0,
+      languageCode: 'en-US',
+      duration: 0,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  } finally {
+    // Clean up temporary file
+    if (gcsUri) {
+      console.log('Cleaning up temporary file:', gcsUri);
+      await deleteFromGCS(gcsUri);
+    }
+  }
 }
 
 /**
