@@ -143,8 +143,9 @@ export async function POST(request: NextRequest) {
 
     // Find meaningful results
     const meaningfulResults = results.filter(r => r.success && r.isMeaningful);
-    const bestResult = results.filter(r => r.success).reduce((best, current) => 
-      current.confidence > best.confidence ? current : best, results[0] || {});
+    const successfulResults = results.filter(r => r.success);
+    const bestResult = successfulResults.reduce((best, current) => 
+      (current.confidence || 0) > (best.confidence || 0) ? current : best, successfulResults[0] || {});
 
     return NextResponse.json({
       success: true,
