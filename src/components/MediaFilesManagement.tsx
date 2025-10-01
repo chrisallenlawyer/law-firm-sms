@@ -232,7 +232,7 @@ export default function MediaFilesManagement() {
                   required
                 />
                 <p className="mt-1 text-sm text-gray-500">
-                  Supported formats: MP3, WAV, MP4, WebM. Max size: 2GB
+                  Supported formats: MP3, WAV, MP4, WebM, OGG, FLAC. Max size: 500MB
                 </p>
               </div>
 

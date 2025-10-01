@@ -175,7 +175,7 @@ export async function getAudioDuration(audioUrl: string): Promise<number> {
  * Validate audio file format and size
  */
 export function validateAudioFile(file: File): { valid: boolean; error?: string } {
-  const maxSizeBytes = 2 * 1024 * 1024 * 1024; // 2GB
+  const maxSizeBytes = 500 * 1024 * 1024; // 500MB - more reasonable limit for Vercel
   const allowedTypes = [
     'audio/mpeg',
     'audio/mp3',
@@ -192,7 +192,7 @@ export function validateAudioFile(file: File): { valid: boolean; error?: string 
   ];
 
   if (file.size > maxSizeBytes) {
-    return { valid: false, error: 'File size exceeds 2GB limit' };
+    return { valid: false, error: 'File size exceeds 500MB limit' };
   }
 
   if (!allowedTypes.includes(file.type)) {

@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    serverComponentsExternalPackages: ['@google-cloud/speech'],
+  },
+  // Increase body size limit for file uploads
+  serverActions: {
+    bodySizeLimit: '500mb',
+  },
 };
 
 export default nextConfig;
