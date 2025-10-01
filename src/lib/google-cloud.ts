@@ -170,12 +170,12 @@ export async function transcribeAudioFromUrl(
   
   // Default configuration optimized for legal audio/video
   const defaultConfig: TranscriptionConfig = {
-    encoding: 'LINEAR16', // More compatible with various formats
-    sampleRateHertz: 16000, // Standard sample rate
+    encoding: 'MP3', // Better for .m4a and common audio formats
+    sampleRateHertz: 44100, // Higher quality sample rate
     languageCode: 'en-US',
     enableSpeakerDiarization: false, // Disable for now to simplify
     diarizationSpeakerCount: 2,
-    model: 'default', // Use default model for better compatibility
+    model: 'phone_call', // Better for voice recordings
     useEnhanced: true,
     ...config
   };
