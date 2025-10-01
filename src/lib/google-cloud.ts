@@ -75,7 +75,7 @@ export interface TranscriptionResult {
 async function uploadToGCS(supabaseUrl: string, filename: string): Promise<string> {
   const storage = getStorageClient();
   const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID!;
-  const bucketName = `${projectId}-temp-transcription`;
+  const bucketName = process.env.GOOGLE_CLOUD_BUCKET_NAME || `${projectId}-media-files`;
   
   try {
     // Download file from Supabase
@@ -86,11 +86,11 @@ async function uploadToGCS(supabaseUrl: string, filename: string): Promise<strin
     
     const fileBuffer = await response.arrayBuffer();
     
-    // Ensure bucket exists
+    // Use the specified bucket (must exist)
     const bucket = storage.bucket(bucketName);
     const [exists] = await bucket.exists();
     if (!exists) {
-      await bucket.create();
+      throw new Error(`Storage bucket '${bucketName}' does not exist. Please create it manually in Google Cloud Console. See GOOGLE-CLOUD-BUCKET-SETUP.md for instructions.`);
     }
     
     // Upload to GCS with unique filename
