@@ -170,12 +170,12 @@ export async function transcribeAudioFromUrl(
   
   // Default configuration optimized for legal audio/video
   const defaultConfig: TranscriptionConfig = {
-    encoding: 'WEBM_OPUS',
-    sampleRateHertz: 48000,
+    encoding: 'LINEAR16', // More compatible with various formats
+    sampleRateHertz: 16000, // Standard sample rate
     languageCode: 'en-US',
-    enableSpeakerDiarization: true,
+    enableSpeakerDiarization: false, // Disable for now to simplify
     diarizationSpeakerCount: 2,
-    model: 'phone_call', // Good for legal conversations
+    model: 'default', // Use default model for better compatibility
     useEnhanced: true,
     ...config
   };
@@ -210,18 +210,37 @@ export async function transcribeAudioFromUrl(
     };
 
     console.log('Starting transcription for:', audioUrl);
+    console.log('Using config:', {
+      encoding: defaultConfig.encoding,
+      sampleRateHertz: defaultConfig.sampleRateHertz,
+      languageCode: defaultConfig.languageCode,
+      model: defaultConfig.model,
+      useEnhanced: defaultConfig.useEnhanced
+    });
     
     // Use recognize for shorter files, longRunningRecognize for longer files
     const [response] = await speechClient.longRunningRecognize(request);
     const [operation] = await response.promise();
     
+    console.log('Google Cloud operation completed:', {
+      hasResults: !!operation.results,
+      resultsCount: operation.results?.length || 0,
+      operationName: operation.name
+    });
+    
     if (!operation.results || operation.results.length === 0) {
+      console.log('No transcription results - this could mean:');
+      console.log('1. Audio is too quiet or silent');
+      console.log('2. Audio format is not supported');
+      console.log('3. Audio is corrupted');
+      console.log('4. Wrong encoding settings');
+      
       return {
         transcript: '',
         confidence: 0,
         languageCode: defaultConfig.languageCode,
         duration: 0,
-        error: 'No transcription results returned'
+        error: 'No transcription results returned - audio may be silent, corrupted, or in unsupported format'
       };
     }
 
