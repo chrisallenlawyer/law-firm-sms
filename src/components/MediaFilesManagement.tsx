@@ -559,7 +559,7 @@ export default function MediaFilesManagement() {
                 <textarea
                   readOnly
                   value={selectedTranscript}
-                  className="w-full h-96 p-4 border border-gray-300 rounded-md text-sm font-mono bg-gray-50"
+                  className="w-full h-96 p-4 border border-gray-300 rounded-md text-sm font-mono bg-white text-gray-900"
                   placeholder="No transcript available"
                 />
               </div>
