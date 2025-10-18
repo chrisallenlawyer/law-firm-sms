@@ -336,7 +336,7 @@ export default function YouTubeVideosManagement() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="e.g., Welcome Video"
                 />
               </div>
@@ -349,7 +349,7 @@ export default function YouTubeVideosManagement() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="Optional description"
                 />
               </div>
@@ -361,7 +361,7 @@ export default function YouTubeVideosManagement() {
                 <select
                   value={formData.video_type}
                   onChange={(e) => setFormData({ ...formData, video_type: e.target.value as 'video' | 'playlist' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 >
                   <option value="video">Single Video</option>
                   <option value="playlist">Playlist</option>
@@ -384,7 +384,7 @@ export default function YouTubeVideosManagement() {
                     const extracted = extractYouTubeId(e.target.value)
                     setFormData({ ...formData, youtube_id: extracted })
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="Paste YouTube URL or enter ID directly"
                 />
                 <p className="mt-1 text-xs text-gray-500">
@@ -400,7 +400,7 @@ export default function YouTubeVideosManagement() {
                   type="number"
                   value={formData.display_order}
                   onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="0"
                 />
                 <p className="mt-1 text-xs text-gray-500">
