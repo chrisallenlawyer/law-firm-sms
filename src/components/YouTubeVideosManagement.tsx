@@ -202,9 +202,9 @@ export default function YouTubeVideosManagement() {
       <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded">
         <p className="font-medium mb-2">How to add YouTube content:</p>
         <ul className="list-disc list-inside space-y-1 text-sm">
-          <li><strong>Single Video:</strong> Use the video ID from the URL (e.g., "dQw4w9WgXcQ" from youtube.com/watch?v=dQw4w9WgXcQ)</li>
-          <li><strong>Playlist:</strong> Use the playlist ID from the URL (e.g., "PLrAXtmErZgOe..." from youtube.com/playlist?list=PLrAXtmErZgOe...)</li>
-          <li>You can paste the full YouTube URL and we'll extract the ID automatically</li>
+          <li><strong>Single Video:</strong> Use the video ID from the URL (e.g., &quot;dQw4w9WgXcQ&quot; from youtube.com/watch?v=dQw4w9WgXcQ)</li>
+          <li><strong>Playlist:</strong> Use the playlist ID from the URL (e.g., &quot;PLrAXtmErZgOe...&quot; from youtube.com/playlist?list=PLrAXtmErZgOe...)</li>
+          <li>You can paste the full YouTube URL and we&apos;ll extract the ID automatically</li>
         </ul>
       </div>
 
