@@ -138,6 +138,28 @@ export default async function SiteDashboard() {
               </Link>
 
               <Link
+                href="/admin/site-dashboard/videos"
+                className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
+              >
+                <div>
+                  <span className="rounded-lg inline-flex p-3 bg-red-50 text-red-700 ring-4 ring-white">
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </span>
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-lg font-bold text-black" style={{color: 'black', fontWeight: '900'}}>
+                    <span className="absolute inset-0" aria-hidden="true" />
+                    Manage Videos
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Manage YouTube videos displayed on homepage
+                  </p>
+                </div>
+              </Link>
+
+              <Link
                 href="/admin/site-dashboard/settings"
                 className="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg border border-gray-200 hover:border-gray-300"
               >

@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import RotatingCourthouseImages from '@/components/RotatingCourthouseImages'
+import YouTubeVideoPlayer from '@/components/YouTubeVideoPlayer'
 
 export default function HomePage() {
   return (
@@ -159,6 +160,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* YouTube Video Player Section */}
+      <YouTubeVideoPlayer />
 
       {/* Contact Section */}
       <section id="contact" className="py-16 bg-gray-50">
