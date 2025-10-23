@@ -72,7 +72,7 @@ export default function TeamPage() {
               Team Information Coming Soon
             </h3>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-              We're currently updating our team page with detailed information about our attorneys and staff members. 
+              We&apos;re currently updating our team page with detailed information about our attorneys and staff members. 
               Check back soon to learn more about the dedicated professionals who serve our community.
             </p>
             
