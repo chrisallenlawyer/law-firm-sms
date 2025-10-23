@@ -1,0 +1,194 @@
+import Image from 'next/image'
+import Link from 'next/link'
+
+export default function TeamPage() {
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-4">
+              <div className="flex-shrink-0">
+                <Image
+                  src="/AlabamaSeal.jpg"
+                  alt="Alabama State Seal"
+                  width={60}
+                  height={60}
+                  className="rounded-full"
+                />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Public Defender
+                </h1>
+                <p className="text-sm text-gray-600">
+                  24th Judicial Circuit, Alabama
+                </p>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
+                Home
+              </Link>
+              <Link href="/faqs" className="text-gray-700 hover:text-blue-600 font-medium">
+                FAQs
+              </Link>
+              <Link href="/#contact" className="text-gray-700 hover:text-blue-600 font-medium">
+                Contact
+              </Link>
+              <Link href="/admin/login" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 font-medium">
+                Staff Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-900 to-blue-800 text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl md:text-6xl font-bold mb-6">
+              Meet Our Team
+            </h2>
+            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+              Dedicated legal professionals serving Fayette, Lamar, and Pickens Counties
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Coming Soon Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-8">
+              <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              Team Information Coming Soon
+            </h3>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+              We're currently updating our team page with detailed information about our attorneys and staff members. 
+              Check back soon to learn more about the dedicated professionals who serve our community.
+            </p>
+            
+            {/* Placeholder Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+              <div className="bg-white p-8 rounded-lg shadow-md">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">Attorneys</h4>
+                <p className="text-gray-600">
+                  Experienced legal professionals dedicated to providing quality representation for our clients.
+                </p>
+              </div>
+
+              <div className="bg-white p-8 rounded-lg shadow-md">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">Support Staff</h4>
+                <p className="text-gray-600">
+                  Administrative professionals who ensure smooth operations and excellent client service.
+                </p>
+              </div>
+
+              <div className="bg-white p-8 rounded-lg shadow-md">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">Court Staff</h4>
+                <p className="text-gray-600">
+                  Specialized staff members who coordinate court appearances and client communications.
+                </p>
+              </div>
+            </div>
+
+            {/* Contact Information */}
+            <div className="mt-12 bg-white p-8 rounded-lg shadow-md">
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">Need to Reach Us?</h4>
+              <p className="text-gray-600 mb-6">
+                While we update our team page, you can still contact our office for assistance.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  href="/#contact" 
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Contact Information
+                </Link>
+                <Link 
+                  href="/faqs" 
+                  className="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors"
+                >
+                  View FAQs
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <Image
+                  src="/AlabamaSeal.jpg"
+                  alt="Alabama State Seal"
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div>
+                  <h4 className="text-lg font-semibold">Public Defender</h4>
+                  <p className="text-sm text-gray-400">24th Judicial Circuit</p>
+                </div>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Dedicated to providing quality legal representation to the citizens of 
+                Fayette, Lamar, and Pickens Counties.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Counties Served</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>Fayette County</li>
+                <li>Lamar County</li>
+                <li>Pickens County</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/" className="text-gray-400 hover:text-white">Home</Link></li>
+                <li><Link href="/faqs" className="text-gray-400 hover:text-white">FAQs</Link></li>
+                <li><Link href="/#contact" className="text-gray-400 hover:text-white">Contact</Link></li>
+                <li><Link href="/admin/login" className="text-gray-400 hover:text-white">Staff Login</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2024 24th Judicial Circuit Public Defender. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}

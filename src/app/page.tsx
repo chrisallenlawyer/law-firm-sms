@@ -60,10 +60,10 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 
-                  href="#contact" 
+                  href="/team" 
                   className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                 >
-                  Get Legal Help
+                  Meet Our Team
                 </Link>
                 <Link 
                   href="#mission" 
