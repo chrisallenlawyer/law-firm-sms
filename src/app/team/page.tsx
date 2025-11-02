@@ -105,12 +105,12 @@ export default function TeamPage() {
               <div className="bg-white p-8 rounded-lg shadow-md">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-2">Court Staff</h4>
+                <h4 className="text-xl font-semibold text-gray-900 mb-2">Investigators</h4>
                 <p className="text-gray-600">
-                  Specialized staff members who coordinate court appearances and client communications.
+                  Professional investigators who gather evidence, interview witnesses, and conduct thorough case research to support our legal defense strategies.
                 </p>
               </div>
             </div>
