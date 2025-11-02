@@ -2,8 +2,22 @@ import Image from 'next/image'
 import Link from 'next/link'
 import RotatingCourthouseImages from '@/components/RotatingCourthouseImages'
 import YouTubeVideoPlayer from '@/components/YouTubeVideoPlayer'
+import { createClient } from '@/lib/supabase/server'
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch site content from database
+  const supabase = await createClient()
+  const { data: siteContent } = await supabase
+    .from('site_content')
+    .select('*')
+    .eq('is_active', true)
+
+  // Helper function to get content by key with fallback
+  const getContent = (key: string, fallback: string = '') => {
+    const content = siteContent?.find(c => c.content_key === key)
+    return content?.content_value || fallback
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -53,23 +67,23 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                Protecting Your Rights
+                {getContent('hero_title', 'Protecting Your Rights')}
               </h2>
               <p className="text-xl md:text-2xl mb-8 text-blue-100">
-                Dedicated legal representation for Fayette, Lamar, and Pickens Counties
+                {getContent('hero_subtitle', 'Dedicated legal representation for Fayette, Lamar, and Pickens Counties')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link 
                   href="/team" 
                   className="bg-white text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
                 >
-                  Meet Our Team
+                  {getContent('hero_cta_primary', 'Meet Our Team')}
                 </Link>
                 <Link 
                   href="#mission" 
                   className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-900 transition-colors"
                 >
-                  Learn More
+                  {getContent('hero_cta_secondary', 'Learn More')}
                 </Link>
               </div>
             </div>
@@ -108,10 +122,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Our Mission
+              {getContent('mission_title', 'Our Mission')}
             </h3>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              To professionally and diligently represent clients in the community who are unable to pay for an attorney.
+              {getContent('mission_text', 'To professionally and diligently represent clients in the community who are unable to pay for an attorney.')}
             </p>
           </div>
           
@@ -122,12 +136,13 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-2">Fayette County Office</h4>
-              <p className="text-gray-600">
-                Fayette County Courthouse<br />
-                Fayette, Alabama<br />
-                <span className="text-sm text-gray-500">(205) 555-0123</span>
-              </p>
+              <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                {getContent('office_fayette_name', 'Fayette County Office')}
+              </h4>
+              <div className="text-gray-600">
+                <div dangerouslySetInnerHTML={{ __html: getContent('office_fayette_address', 'Fayette County Courthouse<br />Fayette, Alabama') }} />
+                <span className="text-sm text-gray-500">{getContent('office_fayette_phone', '(205) 555-0123')}</span>
+              </div>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -136,12 +151,13 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-2">Lamar County Office</h4>
-              <p className="text-gray-600">
-                Lamar County Courthouse<br />
-                Vernon, Alabama<br />
-                <span className="text-sm text-gray-500">(205) 555-0124</span>
-              </p>
+              <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                {getContent('office_lamar_name', 'Lamar County Office')}
+              </h4>
+              <div className="text-gray-600">
+                <div dangerouslySetInnerHTML={{ __html: getContent('office_lamar_address', 'Lamar County Courthouse<br />Vernon, Alabama') }} />
+                <span className="text-sm text-gray-500">{getContent('office_lamar_phone', '(205) 555-0124')}</span>
+              </div>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -150,12 +166,13 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <h4 className="text-xl font-semibold text-gray-900 mb-2">Pickens County Office</h4>
-              <p className="text-gray-600">
-                Pickens County Courthouse<br />
-                Carrollton, Alabama<br />
-                <span className="text-sm text-gray-500">(205) 555-0125</span>
-              </p>
+              <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                {getContent('office_pickens_name', 'Pickens County Office')}
+              </h4>
+              <div className="text-gray-600">
+                <div dangerouslySetInnerHTML={{ __html: getContent('office_pickens_address', 'Pickens County Courthouse<br />Carrollton, Alabama') }} />
+                <span className="text-sm text-gray-500">{getContent('office_pickens_phone', '(205) 555-0125')}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -169,10 +186,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              Contact Information
+              {getContent('contact_title', 'Contact Information')}
             </h3>
             <p className="text-lg text-gray-600">
-              Need legal assistance? Contact our office for help.
+              {getContent('contact_subtitle', 'Need legal assistance? Contact our office for help.')}
             </p>
           </div>
 
@@ -184,7 +201,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Phone</h4>
-              <p className="text-gray-600">(205) 555-0123</p>
+              <p className="text-gray-600">{getContent('contact_phone', '(205) 555-0123')}</p>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -194,7 +211,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Email</h4>
-              <p className="text-gray-600">info@24thcircuitpd.org</p>
+              <p className="text-gray-600">{getContent('contact_email', 'info@24thcircuitpd.org')}</p>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -204,7 +221,7 @@ export default function HomePage() {
                 </svg>
               </div>
               <h4 className="text-lg font-semibold text-gray-900 mb-2">Office Hours</h4>
-              <p className="text-gray-600">Mon-Fri: 8:00 AM - 5:00 PM</p>
+              <p className="text-gray-600">{getContent('contact_hours', 'Mon-Fri: 8:00 AM - 5:00 PM')}</p>
             </div>
           </div>
         </div>
@@ -229,8 +246,7 @@ export default function HomePage() {
                 </div>
               </div>
               <p className="text-gray-400 text-sm">
-                Dedicated to providing quality legal representation to the citizens of 
-                Fayette, Lamar, and Pickens Counties.
+                {getContent('footer_description', 'Dedicated to providing quality legal representation to the citizens of Fayette, Lamar, and Pickens Counties.')}
               </p>
             </div>
 
@@ -255,7 +271,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 24th Judicial Circuit Public Defender. All rights reserved.</p>
+            <p>{getContent('footer_copyright', '© 2024 24th Judicial Circuit Public Defender. All rights reserved.')}</p>
           </div>
         </div>
       </footer>

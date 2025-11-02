@@ -165,7 +165,7 @@ export default function SiteContentManagement() {
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900"
                     placeholder="Enter HTML content..."
                   />
                 ) : (
@@ -173,7 +173,7 @@ export default function SiteContentManagement() {
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="Enter content..."
                   />
                 )}
