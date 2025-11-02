@@ -156,16 +156,6 @@ export default function RotatingCourthouseImages() {
         priority={currentImageIndex === 0}
       />
       
-      {/* Overlay with semi-transparent gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-      
-      {/* Image caption */}
-      <div className="absolute bottom-12 left-0 right-0 text-center text-white">
-        <h3 className="text-xl font-semibold mb-1 drop-shadow-lg">
-          {currentImage.alt_text || currentImage.original_name}
-        </h3>
-      </div>
-      
       {/* Dots indicator */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
